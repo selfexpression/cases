@@ -30,7 +30,7 @@ function getNextVisitLabel(latestVisit?: Visit) {
   const tone = dueState === 'overdue' ? 'danger' : dueState === 'today' ? 'accent' : 'neutral'
 
   return {
-    text: latestVisit.nextAppointmentDate ? formatHumanDate(controlDate) : `Напомнить ${formatHumanDate(controlDate)}`,
+    text: latestVisit.nextAppointmentDate ? formatHumanDate(controlDate) : `Рекомендуемая дата приёма ${formatHumanDate(controlDate)}`,
     tone,
   } as const
 }

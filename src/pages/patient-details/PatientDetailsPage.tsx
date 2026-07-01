@@ -31,7 +31,7 @@ function NextAppointment({
 
   const dueState = getDueState(controlDate)
   const tone = dueState === 'overdue' ? 'danger' : dueState === 'today' ? 'accent' : 'success'
-  const label = nextAppointmentDate ? 'Следующая запись' : 'Напомнить'
+  const label = nextAppointmentDate ? 'Следующая запись' : 'Рекомендуемая дата приёма'
 
   return <Badge compact tone={tone}>{label} {formatHumanDate(controlDate)}</Badge>
 }
