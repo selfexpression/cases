@@ -1,0 +1,11 @@
+.button {
+  width: var(--tap-size);
+  min-width: var(--tap-size);
+  height: var(--tap-size);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  color: var(--color-text);
+  background: var(--color-surface-muted);
+}

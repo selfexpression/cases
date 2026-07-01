@@ -1,0 +1,23 @@
+.page {
+  display: grid;
+  gap: var(--space-5);
+}
+
+.header span {
+  color: var(--color-accent);
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+.header h1 {
+  font-size: 1.8rem;
+}
+
+.note {
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  color: var(--color-muted);
+  background: var(--color-surface-muted);
+}

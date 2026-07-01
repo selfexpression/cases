@@ -1,0 +1,22 @@
+.page {
+  display: grid;
+  gap: var(--space-5);
+}
+
+.header {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.header span {
+  color: var(--color-accent);
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+.header h1 {
+  overflow-wrap: anywhere;
+  font-size: 1.55rem;
+}

@@ -1,0 +1,30 @@
+.header {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.header h1 {
+  overflow-wrap: anywhere;
+  font-size: 1.35rem;
+  line-height: 1.15;
+}
+
+.header a,
+.header span {
+  color: var(--color-muted);
+  font-size: 0.9rem;
+}
+
+.iconLink {
+  width: var(--tap-size);
+  min-width: var(--tap-size);
+  height: var(--tap-size);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  color: var(--color-text);
+  background: var(--color-surface-muted);
+}

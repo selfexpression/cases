@@ -1,0 +1,16 @@
+.item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.before,
+.after {
+  flex: 0 0 auto;
+}
+
+.content {
+  min-width: 0;
+  flex: 1;
+}

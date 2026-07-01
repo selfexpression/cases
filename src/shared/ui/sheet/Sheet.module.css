@@ -1,0 +1,53 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  align-items: end;
+  background: rgb(6 18 15 / 34%);
+}
+
+.sheet {
+  max-height: calc(100svh - var(--space-6));
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  overflow: hidden;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-panel);
+}
+
+.header,
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.footer {
+  border-top: 1px solid var(--color-border);
+  border-bottom: 0;
+}
+
+.header h2 {
+  font-size: 1.05rem;
+}
+
+.content {
+  overflow: auto;
+  padding: var(--space-4);
+}
+
+@media (min-width: 720px) {
+  .backdrop {
+    place-items: center;
+  }
+
+  .sheet {
+    width: min(620px, calc(100vw - var(--space-8)));
+    border-radius: var(--radius-lg);
+  }
+}

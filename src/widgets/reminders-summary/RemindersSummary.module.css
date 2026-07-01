@@ -1,0 +1,31 @@
+.groups,
+.group,
+.list {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.group h2 {
+  font-size: 1rem;
+}
+
+.item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+.item h3 {
+  overflow-wrap: anywhere;
+  font-size: 1rem;
+}
+
+.item p {
+  color: var(--color-muted);
+  font-size: 0.9rem;
+}

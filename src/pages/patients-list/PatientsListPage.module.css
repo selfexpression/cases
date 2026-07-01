@@ -1,0 +1,33 @@
+.page {
+  display: grid;
+  gap: var(--space-5);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.header span {
+  color: var(--color-accent);
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+.header h1 {
+  font-size: 1.8rem;
+  line-height: 1.1;
+}
+
+.list {
+  display: grid;
+  gap: var(--space-3);
+}
+
+@media (min-width: 820px) {
+  .list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

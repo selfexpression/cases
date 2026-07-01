@@ -1,0 +1,20 @@
+.shell {
+  width: min(100%, 1120px);
+  min-height: 100svh;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  margin: 0 auto;
+  background: var(--color-bg);
+}
+
+.main {
+  min-width: 0;
+  padding: calc(env(safe-area-inset-top) + var(--space-4)) var(--space-4)
+    calc(80px + env(safe-area-inset-bottom));
+}
+
+@media (min-width: 820px) {
+  .main {
+    padding-inline: var(--space-8);
+  }
+}
