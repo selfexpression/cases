@@ -30,7 +30,23 @@
   font-size: 1rem;
 }
 
+.clinic {
+  width: fit-content;
+  max-width: 100%;
+  display: inline-flex;
+  margin-top: var(--space-1);
+  border-radius: 999px;
+  padding: 2px 8px;
+  color: var(--color-accent-strong);
+  background: var(--color-accent-soft);
+  font-size: 0.72rem;
+  font-weight: 750;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
 .item p {
+  margin-top: var(--space-1);
   overflow-wrap: anywhere;
   color: var(--color-muted);
   font-size: 0.9rem;

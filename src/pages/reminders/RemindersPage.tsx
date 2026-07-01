@@ -19,7 +19,7 @@ export function RemindersPage() {
       </header>
 
       {reminders.length ? (
-        <RemindersSummary patients={storage.patients} reminders={reminders} />
+        <RemindersSummary clinics={storage.clinics} patients={storage.patients} reminders={reminders} />
       ) : (
         <EmptyState
           description="Нет просроченных возвратов, записей на сегодня или подошедшей профгигиены."

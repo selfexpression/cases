@@ -1,4 +1,4 @@
-import { addWeeksISO, getDueState, subtractWeeksISO } from '@/shared/lib/date/date'
+import { addWeeksISO, getDaysUntil, getDueState, subtractWeeksISO } from '@/shared/lib/date/date'
 import type { HygieneRecord } from '@/entities/hygiene/types'
 import type { OrthodonticCase } from '@/entities/orthodontic-case/types'
 import type { Patient } from '@/entities/patient/types'
@@ -23,6 +23,10 @@ function getLatestHygiene(patientId: string, hygieneRecords: HygieneRecord[]) {
   return hygieneRecords
     .filter((record) => record.patientId === patientId)
     .sort((first, second) => (second.completedAt ?? second.createdAt).localeCompare(first.completedAt ?? first.createdAt))[0]
+}
+
+function getReminderDistance(reminder: Reminder) {
+  return 'dueDate' in reminder ? Math.abs(getDaysUntil(reminder.dueDate)) : Number.POSITIVE_INFINITY
 }
 
 export function calculateReminders({
@@ -110,6 +114,12 @@ export function calculateReminders({
   }
 
   return reminders.sort((first, second) => {
+    const distanceDifference = getReminderDistance(first) - getReminderDistance(second)
+
+    if (distanceDifference !== 0) {
+      return distanceDifference
+    }
+
     const firstDate = 'dueDate' in first ? first.dueDate : '9999-12-31'
     const secondDate = 'dueDate' in second ? second.dueDate : '9999-12-31'
     return firstDate.localeCompare(secondDate)
