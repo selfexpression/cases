@@ -23,7 +23,7 @@ export function RemindersPage() {
       ) : (
         <EmptyState
           description="Нет просроченных возвратов, записей на сегодня или подошедшей профгигиены."
-          title="Всё спокойно"
+          title="Актуальных напоминаний нет"
         />
       )}
     </div>
