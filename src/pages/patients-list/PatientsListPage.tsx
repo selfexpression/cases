@@ -40,6 +40,9 @@ export function PatientsListPage() {
           {patients.map((patient) => (
             <PatientCard
               key={patient.id}
+              latestHygiene={storage.hygieneRecords
+                .filter((record) => record.patientId === patient.id)
+                .sort((first, second) => (second.completedAt ?? second.createdAt).localeCompare(first.completedAt ?? first.createdAt))[0]}
               latestVisit={storage.visits
                 .filter((visit) => visit.patientId === patient.id)
                 .sort((first, second) => second.visitDate.localeCompare(first.visitDate))[0]}

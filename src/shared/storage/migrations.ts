@@ -2,7 +2,7 @@ import { differenceInCalendarMonths, parseISO } from 'date-fns'
 import { appStorageSchema, type AppStorage } from './app-storage-schema'
 import { defaultStorage } from './default-storage'
 
-const CURRENT_STORAGE_VERSION = 5
+const CURRENT_STORAGE_VERSION = 6
 
 type VersionedStorage = {
   version?: number
@@ -70,6 +70,13 @@ const migrations: Record<number, Migration> = {
       ...storage,
       version: 5,
       hygieneRecords: migrateHygieneWeeksToMonths(storage.hygieneRecords),
+    }
+  },
+  5(storage) {
+    return {
+      ...storage,
+      version: 6,
+      hygieneRecords: addHygieneExternalFlag(storage.hygieneRecords),
     }
   },
 }
@@ -143,6 +150,23 @@ function migrateHygieneWeeksToMonths(hygieneRecords: unknown) {
     return {
       ...nextRecord,
       nextDueInMonths,
+    }
+  })
+}
+
+function addHygieneExternalFlag(hygieneRecords: unknown) {
+  if (!Array.isArray(hygieneRecords)) {
+    return []
+  }
+
+  return hygieneRecords.map((record) => {
+    if (!isRecord(record)) {
+      return record
+    }
+
+    return {
+      ...record,
+      externalUnknownDate: typeof record.externalUnknownDate === 'boolean' ? record.externalUnknownDate : false,
     }
   })
 }

@@ -21,7 +21,7 @@ export function PatientCreatePage() {
       <PatientForm
         onSubmit={(draft) => {
           const patient = patientRepository.create(draft)
-          navigate(`/patients/${patient.id}`)
+          navigate(`/patients/${patient.id}`, { replace: true })
         }}
         submitLabel="Создать пациента"
       />

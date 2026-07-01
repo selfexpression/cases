@@ -15,23 +15,38 @@ type HygieneFormProps = {
 }
 
 export function HygieneForm({ initialDraft, onCancel, onSubmit, submitLabel = 'Отметить' }: HygieneFormProps) {
+  const [externalUnknownDate, setExternalUnknownDate] = useState(Boolean(initialDraft?.externalUnknownDate))
   const [completedAt, setCompletedAt] = useState(initialDraft?.completedAt ?? todayISO())
   const [nextDueInMonths, setNextDueInMonths] = useState(initialDraft?.nextDueInMonths?.toString() ?? '')
-  const calculatedNextDueAt = nextDueInMonths ? addMonthsISO(completedAt, Number(nextDueInMonths)) : undefined
+  const calculatedNextDueAt = !externalUnknownDate && nextDueInMonths ? addMonthsISO(completedAt, Number(nextDueInMonths)) : undefined
 
   return (
     <div className={styles.form}>
-      <DateInput
-        label="Дата профгигиены"
-        onChange={(event) => setCompletedAt(event.target.value)}
-        value={completedAt}
-      />
-      <NumberInput
-        label="Следующая профгигиена, через месяцев"
-        min={1}
-        onValueChange={setNextDueInMonths}
-        value={nextDueInMonths}
-      />
+      <label className={styles.checkbox}>
+        <input
+          checked={externalUnknownDate}
+          onChange={(event) => setExternalUnknownDate(event.target.checked)}
+          type="checkbox"
+        />
+        <span>Гигиена выполнена в другой клинике, дата неизвестна</span>
+      </label>
+
+      {!externalUnknownDate ? (
+        <>
+          <DateInput
+            label="Дата профгигиены"
+            onChange={(event) => setCompletedAt(event.target.value)}
+            value={completedAt}
+          />
+          <NumberInput
+            label="Следующая профгигиена, через месяцев"
+            min={1}
+            onValueChange={setNextDueInMonths}
+            value={nextDueInMonths}
+          />
+        </>
+      ) : null}
+
       {calculatedNextDueAt ? <p className={styles.hint}>Дата напоминания: {formatHumanDate(calculatedNextDueAt)}</p> : null}
       <div className={styles.actions}>
         {onCancel ? (
@@ -43,8 +58,9 @@ export function HygieneForm({ initialDraft, onCancel, onSubmit, submitLabel = '�
           icon={initialDraft ? <Save size={18} /> : <Sparkles size={18} />}
           onClick={() =>
             onSubmit({
-              completedAt,
-              nextDueInMonths: nextDueInMonths ? Number(nextDueInMonths) : undefined,
+              completedAt: externalUnknownDate ? undefined : completedAt,
+              externalUnknownDate,
+              nextDueInMonths: !externalUnknownDate && nextDueInMonths ? Number(nextDueInMonths) : undefined,
             })
           }
         >

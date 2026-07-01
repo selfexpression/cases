@@ -48,7 +48,8 @@ export const visitSchema = z.object({
 export const hygieneRecordSchema = z.object({
   id: z.string(),
   patientId: z.string(),
-  completedAt: z.string(),
+  completedAt: z.string().optional(),
+  externalUnknownDate: z.boolean().optional(),
   nextDueAt: z.string().optional(),
   nextDueInMonths: z.number().positive().optional(),
   createdAt: z.string(),
@@ -56,7 +57,7 @@ export const hygieneRecordSchema = z.object({
 })
 
 export const appStorageSchema = z.object({
-  version: z.literal(5),
+  version: z.literal(6),
   patients: z.array(patientSchema),
   orthodonticCases: z.array(orthodonticCaseSchema),
   notes: z.array(patientNoteSchema),

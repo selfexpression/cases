@@ -59,6 +59,32 @@
   gap: var(--space-2);
 }
 
+.hygieneFlag {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: 1px solid transparent;
+}
+
+.hygieneFlag svg {
+  flex: 0 0 auto;
+}
+
+.hygieneWarning {
+  color: var(--color-warning);
+  border-color: color-mix(in srgb, var(--color-warning) 20%, transparent);
+  background: var(--color-warning-soft);
+}
+
+.hygieneDanger {
+  color: var(--color-danger);
+  border-color: color-mix(in srgb, var(--color-danger) 22%, transparent);
+  background: var(--color-danger-soft);
+}
+
 .content p,
 .stage {
   overflow-wrap: anywhere;

@@ -4,7 +4,8 @@ import { readStorage, updateStorage } from '@/shared/storage/app-store'
 import type { HygieneRecord } from './types'
 
 export type HygieneDraft = {
-  completedAt: string
+  completedAt?: string
+  externalUnknownDate?: boolean
   nextDueInMonths?: number
 }
 
@@ -16,7 +17,7 @@ export const hygieneRepository = {
   getByPatientId(patientId: string) {
     return readStorage()
       .hygieneRecords.filter((record) => record.patientId === patientId)
-      .sort((first, second) => second.completedAt.localeCompare(first.completedAt))
+      .sort((first, second) => (second.completedAt ?? second.createdAt).localeCompare(first.completedAt ?? first.createdAt))
   },
   getLatestByPatientId(patientId: string) {
     return this.getByPatientId(patientId)[0]
@@ -26,9 +27,10 @@ export const hygieneRepository = {
     const record: HygieneRecord = {
       id: createId(),
       patientId,
-      completedAt: draft.completedAt,
-      nextDueAt: draft.nextDueInMonths ? addMonthsISO(draft.completedAt, draft.nextDueInMonths) : undefined,
-      nextDueInMonths: draft.nextDueInMonths,
+      completedAt: draft.externalUnknownDate ? undefined : draft.completedAt,
+      externalUnknownDate: draft.externalUnknownDate,
+      nextDueAt: !draft.externalUnknownDate && draft.completedAt && draft.nextDueInMonths ? addMonthsISO(draft.completedAt, draft.nextDueInMonths) : undefined,
+      nextDueInMonths: draft.externalUnknownDate ? undefined : draft.nextDueInMonths,
       createdAt: timestamp,
       updatedAt: timestamp,
     }
@@ -47,9 +49,10 @@ export const hygieneRepository = {
         record.id === recordId
           ? {
               ...record,
-              completedAt: draft.completedAt,
-              nextDueAt: draft.nextDueInMonths ? addMonthsISO(draft.completedAt, draft.nextDueInMonths) : undefined,
-              nextDueInMonths: draft.nextDueInMonths,
+              completedAt: draft.externalUnknownDate ? undefined : draft.completedAt,
+              externalUnknownDate: draft.externalUnknownDate,
+              nextDueAt: !draft.externalUnknownDate && draft.completedAt && draft.nextDueInMonths ? addMonthsISO(draft.completedAt, draft.nextDueInMonths) : undefined,
+              nextDueInMonths: draft.externalUnknownDate ? undefined : draft.nextDueInMonths,
               updatedAt: nowISO(),
             }
           : record,

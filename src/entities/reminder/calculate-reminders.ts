@@ -22,7 +22,7 @@ function getLatestVisit(patientId: string, visits: Visit[]) {
 function getLatestHygiene(patientId: string, hygieneRecords: HygieneRecord[]) {
   return hygieneRecords
     .filter((record) => record.patientId === patientId)
-    .sort((first, second) => second.completedAt.localeCompare(first.completedAt))[0]
+    .sort((first, second) => (second.completedAt ?? second.createdAt).localeCompare(first.completedAt ?? first.createdAt))[0]
 }
 
 function hasText(value?: string) {

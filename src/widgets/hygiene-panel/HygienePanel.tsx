@@ -16,6 +16,10 @@ type HygienePanelProps = {
 }
 
 function getHygieneBadge(record?: HygieneRecord) {
+  if (record?.externalUnknownDate) {
+    return <Badge tone="warning">Другая клиника · дата неизвестна</Badge>
+  }
+
   if (!record?.nextDueAt) {
     return <Badge>Нет даты</Badge>
   }
@@ -40,7 +44,13 @@ export function HygienePanel({ patientId, records }: HygienePanelProps) {
       <div className={styles.header}>
         <div>
           <h2>Профгигиена</h2>
-          <p>{latestRecord ? `Последняя: ${formatHumanDate(latestRecord.completedAt)}` : 'Записей пока нет'}</p>
+          <p>
+            {latestRecord
+              ? latestRecord.externalUnknownDate || !latestRecord.completedAt
+                ? 'Последняя: дата неизвестна'
+                : `Последняя: ${formatHumanDate(latestRecord.completedAt)}`
+              : 'Записей пока нет'}
+          </p>
         </div>
         {getHygieneBadge(latestRecord)}
       </div>
@@ -60,7 +70,7 @@ export function HygienePanel({ patientId, records }: HygienePanelProps) {
         <div className={styles.history}>
           {records.slice(1).map((record) => (
             <div className={styles.record} key={record.id}>
-              <span>{formatHumanDate(record.completedAt)}</span>
+              <span>{record.externalUnknownDate || !record.completedAt ? 'Другая клиника · дата неизвестна' : formatHumanDate(record.completedAt)}</span>
               <div className={styles.rowActions}>
                 <IconButton icon={<Pencil size={17} />} label="Редактировать гигиену" onClick={() => setEditedRecord(record)} />
                 <IconButton

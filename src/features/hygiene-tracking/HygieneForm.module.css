@@ -3,6 +3,22 @@
   gap: var(--space-4);
 }
 
+.checkbox {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  align-items: start;
+  gap: var(--space-3);
+  color: var(--color-text);
+  font-weight: 650;
+}
+
+.checkbox input {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--color-accent);
+  margin-top: 2px;
+}
+
 .actions {
   display: flex;
   justify-content: flex-end;

@@ -97,6 +97,57 @@ describe('migrateStorage', () => {
     ).toBe(7)
   })
 
+  it('adds default hygiene external flag during v5 migration', () => {
+    expect(
+      migrateStorage({
+        version: 5,
+        patients: [],
+        orthodonticCases: [],
+        notes: [],
+        visits: [],
+        settings: { themeMode: 'system', accentColor: 'teal', returnReminderLeadWeeks: 2 },
+        hygieneRecords: [
+          {
+            id: 'hygiene-1',
+            patientId: 'patient-1',
+            completedAt: '2026-01-01',
+            createdAt: '2026-01-01T00:00:00.000Z',
+            updatedAt: '2026-01-01T00:00:00.000Z',
+          },
+        ],
+      }).hygieneRecords[0]?.externalUnknownDate,
+    ).toBe(false)
+  })
+
+  it('keeps external hygiene unknown date records during v6 validation', () => {
+    expect(
+      migrateStorage({
+        version: 6,
+        patients: [],
+        orthodonticCases: [],
+        notes: [],
+        visits: [],
+        settings: { themeMode: 'system', accentColor: 'teal', returnReminderLeadWeeks: 2 },
+        hygieneRecords: [
+          {
+            id: 'hygiene-1',
+            patientId: 'patient-1',
+            externalUnknownDate: true,
+            createdAt: '2026-01-01T00:00:00.000Z',
+            updatedAt: '2026-01-01T00:00:00.000Z',
+          },
+        ],
+      }).hygieneRecords[0],
+    ).toEqual({
+      id: 'hygiene-1',
+      patientId: 'patient-1',
+      externalUnknownDate: true,
+      createdAt: '2026-01-01T00:00:00.000Z',
+      updatedAt: '2026-01-01T00:00:00.000Z',
+    })
+  })
+
+
   it('removes patient phone during v3 migration', () => {
     expect(
       migrateStorage({
