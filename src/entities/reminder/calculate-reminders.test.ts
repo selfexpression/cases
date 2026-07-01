@@ -103,6 +103,7 @@ describe('calculateReminders', () => {
           patientId: patient.id,
           completedAt: '2026-01-01',
           nextDueAt: '2026-06-30',
+          nextDueInMonths: 6,
           createdAt: '2026-01-01T00:00:00.000Z',
           updatedAt: '2026-01-01T00:00:00.000Z',
         },
@@ -123,7 +124,16 @@ describe('calculateReminders', () => {
     const reminders = calculateReminders({
       patients: [patient],
       orthodonticCases: [{ patientId: patient.id, updatedAt: '2026-06-01T00:00:00.000Z' }],
-      visits: [],
+      visits: [
+        {
+          id: 'visit-1',
+          patientId: patient.id,
+          visitDate: '2026-06-01',
+          nextAppointmentDate: '2026-07-10',
+          createdAt: '2026-06-01T00:00:00.000Z',
+          updatedAt: '2026-06-01T00:00:00.000Z',
+        },
+      ],
       hygieneRecords: [],
     })
 
@@ -132,6 +142,23 @@ describe('calculateReminders', () => {
       tone: 'neutral',
       type: 'missing-next-action',
     })
+  })
+
+  it('does not duplicate a new patient without appointment and next action', () => {
+    const reminders = calculateReminders({
+      patients: [patient],
+      orthodonticCases: [{ patientId: patient.id, updatedAt: '2026-06-01T00:00:00.000Z' }],
+      visits: [],
+      hygieneRecords: [],
+    })
+
+    expect(reminders).toEqual([
+      {
+        patientId: patient.id,
+        tone: 'warning',
+        type: 'missing-next-appointment',
+      },
+    ])
   })
 
   it('returns overdue appointment reminder when next appointment is in the past', () => {

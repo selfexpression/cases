@@ -1,10 +1,11 @@
 import { createId } from '@/shared/lib/id/create-id'
+import { addMonthsISO } from '@/shared/lib/date/date'
 import { readStorage, updateStorage } from '@/shared/storage/app-store'
 import type { HygieneRecord } from './types'
 
 export type HygieneDraft = {
   completedAt: string
-  nextDueAt?: string
+  nextDueInMonths?: number
 }
 
 function nowISO() {
@@ -26,7 +27,8 @@ export const hygieneRepository = {
       id: createId(),
       patientId,
       completedAt: draft.completedAt,
-      nextDueAt: draft.nextDueAt || undefined,
+      nextDueAt: draft.nextDueInMonths ? addMonthsISO(draft.completedAt, draft.nextDueInMonths) : undefined,
+      nextDueInMonths: draft.nextDueInMonths,
       createdAt: timestamp,
       updatedAt: timestamp,
     }
@@ -46,7 +48,8 @@ export const hygieneRepository = {
           ? {
               ...record,
               completedAt: draft.completedAt,
-              nextDueAt: draft.nextDueAt || undefined,
+              nextDueAt: draft.nextDueInMonths ? addMonthsISO(draft.completedAt, draft.nextDueInMonths) : undefined,
+              nextDueInMonths: draft.nextDueInMonths,
               updatedAt: nowISO(),
             }
           : record,

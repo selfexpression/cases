@@ -18,7 +18,6 @@ export function filterPatients({ orthodonticCases, patients, query }: FilterPati
     const orthodonticCase = orthodonticCases.find((caseItem) => caseItem.patientId === patient.id)
     const searchableText = [
       patient.fullName,
-      patient.phone,
       orthodonticCase?.diagnosis,
       orthodonticCase?.treatmentStage,
       orthodonticCase?.treatmentPlan,

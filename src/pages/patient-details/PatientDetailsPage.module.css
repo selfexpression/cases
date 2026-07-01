@@ -13,14 +13,15 @@
 }
 
 .summaryHeader {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
+  display: grid;
   gap: var(--space-3);
 }
 
 .summaryHeader h2 {
-  font-size: 1rem;
+  max-width: 100%;
+  overflow-wrap: break-word;
+  font-size: 1.08rem;
+  line-height: 1.2;
 }
 
 .grid {
@@ -45,6 +46,11 @@
 }
 
 @media (min-width: 820px) {
+  .summaryHeader {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+  }
+
   .grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }

@@ -1,4 +1,3 @@
-import { Bell } from 'lucide-react'
 import { readStorage } from '@/shared/storage/app-store'
 import { useStorageVersion } from '@/shared/storage/use-storage-version'
 import { EmptyState } from '@/shared/ui/empty-state/EmptyState'
@@ -27,11 +26,6 @@ export function RemindersPage() {
           title="Всё спокойно"
         />
       )}
-
-      <section className={styles.note}>
-        <Bell size={18} />
-        <p>На этом этапе напоминания показываются внутри приложения при открытии.</p>
-      </section>
     </div>
   )
 }

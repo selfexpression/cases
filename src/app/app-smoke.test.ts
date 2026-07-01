@@ -4,18 +4,17 @@ import { noteRepository } from '@/entities/note/note-repository'
 import { patientRepository } from '@/entities/patient/patient-repository'
 import { reminderRepository } from '@/entities/reminder/reminder-repository'
 import { visitRepository } from '@/entities/visit/visit-repository'
-import { readStorage } from '@/shared/storage/app-store'
+import { readStorage, writeStorage } from '@/shared/storage/app-store'
 import { defaultStorage } from '@/shared/storage/default-storage'
-import { localStorageAdapter } from '@/shared/storage/local-storage-adapter'
 import { installTestLocalStorage } from '@/shared/storage/test-storage'
 
 describe('app smoke flow', () => {
   beforeEach(() => {
     installTestLocalStorage()
-    localStorageAdapter.write(defaultStorage)
+    writeStorage(defaultStorage)
   })
 
-  it('creates patient, notes, visit, hygiene and reminders in local storage', () => {
+  it('creates patient, notes, visit, hygiene and reminders in app storage', () => {
     const patient = patientRepository.create({
       fullName: 'Анна Смирнова',
       diagnosis: 'Скученность',
@@ -30,7 +29,7 @@ describe('app smoke flow', () => {
     })
     hygieneRepository.create(patient.id, {
       completedAt: '2026-01-01',
-      nextDueAt: '2026-06-30',
+      nextDueInMonths: 6,
     })
 
     const storage = readStorage()

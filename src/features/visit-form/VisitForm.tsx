@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { CalendarPlus, Save } from 'lucide-react'
 import { Button } from '@/shared/ui/button/Button'
 import { DateInput } from '@/shared/ui/date-input/DateInput'
-import { Input } from '@/shared/ui/input/Input'
+import { NumberInput } from '@/shared/ui/number-input/NumberInput'
 import { Textarea } from '@/shared/ui/textarea/Textarea'
 import { todayISO } from '@/shared/lib/date/date'
 import type { VisitDraft } from '@/entities/visit/visit-repository'
@@ -53,11 +53,10 @@ export function VisitForm({ initialDraft, onCancel, onSubmit, submitLabel = 'Д�
           onChange={(event) => setNextAppointmentDate(event.target.value)}
           value={nextAppointmentDate}
         />
-        <Input
+        <NumberInput
           label="Если не записался, через недель"
           min={1}
-          onChange={(event) => setShouldReturnInWeeks(event.target.value)}
-          type="number"
+          onValueChange={setShouldReturnInWeeks}
           value={shouldReturnInWeeks}
         />
       </div>

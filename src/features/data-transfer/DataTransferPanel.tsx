@@ -24,8 +24,10 @@ export function DataTransferPanel() {
     }
 
     try {
-      importStorage(await file.text())
-      setMessage('Данные импортированы')
+      const result = importStorage(await file.text())
+      setMessage(
+        `Восстановлено: ${result.patients} пациентов, ${result.visits} визитов, ${result.notes} заметок, ${result.hygieneRecords} записей гигиены`,
+      )
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'Не удалось импортировать данные')
     }
@@ -33,21 +35,26 @@ export function DataTransferPanel() {
 
   return (
     <>
+      <p className={styles.description}>
+        Данные хранятся на этом устройстве. Чтобы восстановить их после очистки данных браузера или на новом телефоне,
+        регулярно сохраняйте резервную копию.
+      </p>
       <div className={styles.actions}>
-        <Button icon={<Download size={18} />} onClick={downloadBackup} variant="secondary">
+        <Button icon={<Download size={16} />} onClick={downloadBackup} size="sm" variant="secondary">
           Экспорт
         </Button>
-        <Button icon={<Upload size={18} />} onClick={() => fileInputRef.current?.click()} variant="secondary">
+        <Button icon={<Upload size={16} />} onClick={() => fileInputRef.current?.click()} size="sm" variant="secondary">
           Импорт
         </Button>
         <Button
-          icon={<RotateCcw size={18} />}
+          icon={<RotateCcw size={16} />}
           onClick={() => {
             if (window.confirm('Очистить все локальные данные?')) {
               clearStorage()
               setMessage('Данные очищены')
             }
           }}
+          size="sm"
           variant="danger"
         >
           Очистить

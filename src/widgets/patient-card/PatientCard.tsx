@@ -1,4 +1,4 @@
-import { ChevronRight } from 'lucide-react'
+import { ArrowUpRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { addWeeksISO, formatHumanDate, getDueState } from '@/shared/lib/date/date'
 import { StatusChip } from '@/shared/ui/status-chip/StatusChip'
@@ -30,7 +30,7 @@ function getNextVisitLabel(latestVisit?: Visit) {
   const tone = dueState === 'overdue' ? 'danger' : dueState === 'today' ? 'accent' : 'neutral'
 
   return {
-    text: latestVisit.nextAppointmentDate ? formatHumanDate(controlDate) : `Вернуть ${formatHumanDate(controlDate)}`,
+    text: latestVisit.nextAppointmentDate ? formatHumanDate(controlDate) : `Напомнить ${formatHumanDate(controlDate)}`,
     tone,
   } as const
 }
@@ -43,12 +43,22 @@ export function PatientCard({ latestVisit, orthodonticCase, patient }: PatientCa
       <div className={styles.content}>
         <div className={styles.top}>
           <h2>{patient.fullName}</h2>
-          {nextVisit ? <StatusChip tone={nextVisit.tone}>{nextVisit.text}</StatusChip> : <StatusChip>Нет записи</StatusChip>}
+          <span className={styles.actionIcon} aria-hidden="true">
+            <ArrowUpRight size={18} />
+          </span>
+        </div>
+        <div className={styles.meta}>
+          {nextVisit ? (
+            <StatusChip compact tone={nextVisit.tone}>
+              {nextVisit.text}
+            </StatusChip>
+          ) : (
+            <StatusChip compact>Нет записи</StatusChip>
+          )}
         </div>
         {orthodonticCase?.diagnosis ? <p>{orthodonticCase.diagnosis}</p> : null}
-        {orthodonticCase?.treatmentStage ? <span>{orthodonticCase.treatmentStage}</span> : null}
+        {orthodonticCase?.treatmentStage ? <span className={styles.stage}>{orthodonticCase.treatmentStage}</span> : null}
       </div>
-      <ChevronRight size={20} />
     </Link>
   )
 }

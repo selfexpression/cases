@@ -1,4 +1,4 @@
-import { addDays, addWeeks, differenceInCalendarDays, format, isBefore, isToday, parseISO, startOfToday, subWeeks } from 'date-fns'
+import { addDays, addMonths, addWeeks, differenceInCalendarDays, format, isBefore, isToday, parseISO, startOfToday, subWeeks } from 'date-fns'
 
 export function toISODate(date: Date) {
   return format(date, 'yyyy-MM-dd')
@@ -14,6 +14,10 @@ export function addDaysISO(dateISO: string, days: number) {
 
 export function addWeeksISO(dateISO: string, weeks: number) {
   return toISODate(addWeeks(parseISO(dateISO), weeks))
+}
+
+export function addMonthsISO(dateISO: string, months: number) {
+  return toISODate(addMonths(parseISO(dateISO), months))
 }
 
 export function subtractWeeksISO(dateISO: string, weeks: number) {

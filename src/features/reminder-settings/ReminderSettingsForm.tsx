@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { settingsRepository } from '@/entities/settings/settings-repository'
-import { Input } from '@/shared/ui/input/Input'
+import { NumberInput } from '@/shared/ui/number-input/NumberInput'
 
 export function ReminderSettingsForm() {
   const settings = settingsRepository.get()
@@ -16,12 +16,11 @@ export function ReminderSettingsForm() {
   }
 
   return (
-    <Input
+    <NumberInput
       label="Предупреждать о возврате за, недель"
       max={52}
       min={0}
-      onChange={(event) => updateReturnReminderLeadWeeks(event.target.value)}
-      type="number"
+      onValueChange={updateReturnReminderLeadWeeks}
       value={returnReminderLeadWeeks}
     />
   )

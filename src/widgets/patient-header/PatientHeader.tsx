@@ -16,7 +16,7 @@ export function PatientHeader({ patient }: PatientHeaderProps) {
       <IconButton icon={<ArrowLeft size={20} />} label="Назад" onClick={() => navigate(-1)} />
       <div>
         <h1>{patient.fullName}</h1>
-        {patient.phone ? <a href={`tel:${patient.phone}`}>{patient.phone}</a> : <span>Телефон не указан</span>}
+        {patient.birthDate ? <span>Дата рождения: {patient.birthDate}</span> : <span>Дата рождения не указана</span>}
       </div>
       <Link aria-label="Редактировать" className={styles.iconLink} title="Редактировать" to={`/patients/${patient.id}/edit`}>
         <Edit size={20} />

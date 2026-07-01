@@ -11,8 +11,8 @@
   line-height: 1.15;
 }
 
-.header a,
-.header span {
+.header > div > a,
+.header > div > span {
   color: var(--color-muted);
   font-size: 0.9rem;
 }

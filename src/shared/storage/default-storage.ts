@@ -1,7 +1,7 @@
 import type { AppStorage } from './app-storage-schema'
 
 export const defaultStorage: AppStorage = {
-  version: 2,
+  version: 5,
   patients: [],
   orthodonticCases: [],
   notes: [],

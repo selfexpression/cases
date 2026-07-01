@@ -1,6 +1,7 @@
 import { DataTransferPanel } from '@/features/data-transfer/DataTransferPanel'
 import { ReminderSettingsForm } from '@/features/reminder-settings/ReminderSettingsForm'
 import { ThemeSwitcher } from '@/features/theme-switcher/ThemeSwitcher'
+import { Disclosure } from '@/shared/ui/disclosure/Disclosure'
 import styles from './SettingsPage.module.css'
 
 export function SettingsPage() {
@@ -21,10 +22,9 @@ export function SettingsPage() {
         <ReminderSettingsForm />
       </section>
 
-      <section className={styles.section}>
-        <h2>Данные</h2>
+      <Disclosure title="Данные">
         <DataTransferPanel />
-      </section>
+      </Disclosure>
     </div>
   )
 }

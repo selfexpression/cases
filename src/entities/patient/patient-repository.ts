@@ -8,7 +8,6 @@ export type PatientDraft = {
   diagnosis?: string
   fullName: string
   nextPlannedAction?: string
-  phone?: string
   treatmentPlan?: string
   treatmentStage?: string
 }
@@ -46,7 +45,6 @@ export const patientRepository = {
       id: createId(),
       fullName: draft.fullName.trim(),
       birthDate: cleanOptional(draft.birthDate),
-      phone: cleanOptional(draft.phone),
       createdAt: timestamp,
       updatedAt: timestamp,
     }
@@ -67,7 +65,6 @@ export const patientRepository = {
         id: patientId,
         fullName: draft.fullName.trim(),
         birthDate: cleanOptional(draft.birthDate),
-        phone: cleanOptional(draft.phone),
         createdAt: storage.patients.find((patient) => patient.id === patientId)?.createdAt ?? timestamp,
         updatedAt: timestamp,
       }

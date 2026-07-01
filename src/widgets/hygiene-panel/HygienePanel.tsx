@@ -23,7 +23,11 @@ function getHygieneBadge(record?: HygieneRecord) {
   const dueState = getDueState(record.nextDueAt)
   const tone = dueState === 'overdue' ? 'danger' : dueState === 'today' ? 'warning' : dueState === 'soon' ? 'accent' : 'success'
 
-  return <Badge tone={tone}>{formatHumanDate(record.nextDueAt)}</Badge>
+  const label = record.nextDueInMonths
+    ? `Через ${record.nextDueInMonths} мес. · ${formatHumanDate(record.nextDueAt)}`
+    : formatHumanDate(record.nextDueAt)
+
+  return <Badge tone={tone}>{label}</Badge>
 }
 
 export function HygienePanel({ patientId, records }: HygienePanelProps) {

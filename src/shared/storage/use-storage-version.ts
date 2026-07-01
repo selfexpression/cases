@@ -1,17 +1,22 @@
 import { useSyncExternalStore } from 'react'
 
-const STORAGE_KEY = 'cases:v1'
+let storageVersion = 0
 
 function subscribe(onStoreChange: () => void) {
-  window.addEventListener('cases-storage-change', onStoreChange)
+  const handleStorageChange = () => {
+    storageVersion += 1
+    onStoreChange()
+  }
+
+  window.addEventListener('cases-storage-change', handleStorageChange)
   window.addEventListener('storage', onStoreChange)
 
   return () => {
-    window.removeEventListener('cases-storage-change', onStoreChange)
+    window.removeEventListener('cases-storage-change', handleStorageChange)
     window.removeEventListener('storage', onStoreChange)
   }
 }
 
 export function useStorageVersion() {
-  return useSyncExternalStore(subscribe, () => window.localStorage.getItem(STORAGE_KEY) ?? '', () => '')
+  return useSyncExternalStore(subscribe, () => storageVersion, () => 0)
 }

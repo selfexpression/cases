@@ -26,14 +26,14 @@ function NextAppointment({
   const controlDate = nextAppointmentDate ?? returnDate
 
   if (!controlDate) {
-    return <Badge tone="warning">Следующая запись не указана</Badge>
+    return <Badge compact tone="warning">Следующая запись не указана</Badge>
   }
 
   const dueState = getDueState(controlDate)
   const tone = dueState === 'overdue' ? 'danger' : dueState === 'today' ? 'accent' : 'success'
-  const label = nextAppointmentDate ? 'Следующая запись' : 'Вернуть пациента'
+  const label = nextAppointmentDate ? 'Следующая запись' : 'Напомнить'
 
-  return <Badge tone={tone}>{label} {formatHumanDate(controlDate)}</Badge>
+  return <Badge compact tone={tone}>{label} {formatHumanDate(controlDate)}</Badge>
 }
 
 export function PatientDetailsPage() {
@@ -65,19 +65,19 @@ export function PatientDetailsPage() {
         <dl className={styles.grid}>
           <div>
             <dt>Диагноз</dt>
-            <dd>{orthodonticCase?.diagnosis || 'Не заполнено'}</dd>
+            <dd>{orthodonticCase?.diagnosis || '-'}</dd>
           </div>
           <div>
             <dt>Этап</dt>
-            <dd>{orthodonticCase?.treatmentStage || 'Не заполнено'}</dd>
+            <dd>{orthodonticCase?.treatmentStage || '-'}</dd>
           </div>
           <div>
             <dt>План</dt>
-            <dd>{orthodonticCase?.treatmentPlan || 'Не заполнено'}</dd>
+            <dd>{orthodonticCase?.treatmentPlan || '-'}</dd>
           </div>
           <div>
             <dt>Следующее действие</dt>
-            <dd>{orthodonticCase?.nextPlannedAction || 'Не заполнено'}</dd>
+            <dd>{orthodonticCase?.nextPlannedAction || '-'}</dd>
           </div>
         </dl>
       </section>

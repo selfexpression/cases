@@ -16,7 +16,6 @@ const patientFormSchema = z.object({
   diagnosis: z.string().optional(),
   fullName: z.string().trim().min(2, 'Укажите ФИО'),
   nextPlannedAction: z.string().optional(),
-  phone: z.string().optional(),
   treatmentPlan: z.string().optional(),
   treatmentStage: z.string().optional(),
 })
@@ -36,17 +35,19 @@ export function PatientForm({ initialCase, initialPatient, onSubmit, submitLabel
     formState: { errors },
     handleSubmit,
     register,
+    watch,
   } = useForm<PatientFormValues>({
     defaultValues: {
       birthDate: initialPatient?.birthDate ?? '',
       diagnosis: initialCase?.diagnosis ?? '',
       fullName: initialPatient?.fullName ?? '',
       nextPlannedAction: initialCase?.nextPlannedAction ?? '',
-      phone: initialPatient?.phone ?? '',
       treatmentPlan: initialCase?.treatmentPlan ?? '',
       treatmentStage: initialCase?.treatmentStage ?? '',
     },
   })
+  const birthDateField = register('birthDate')
+  const birthDate = watch('birthDate') ?? ''
 
   const submit = (values: PatientFormValues) => {
     const result = patientFormSchema.safeParse(values)
@@ -66,8 +67,13 @@ export function PatientForm({ initialCase, initialPatient, onSubmit, submitLabel
         <h2>Пациент</h2>
         <Input error={errors.fullName?.message} label="ФИО" {...register('fullName')} autoComplete="name" />
         <div className={styles.grid}>
-          <DateInput label="Дата рождения" {...register('birthDate')} />
-          <Input label="Телефон" type="tel" {...register('phone')} autoComplete="tel" />
+          <DateInput
+            label="Дата рождения"
+            name={birthDateField.name}
+            onBlur={birthDateField.onBlur}
+            onChange={birthDateField.onChange}
+            value={birthDate}
+          />
         </div>
       </section>
 

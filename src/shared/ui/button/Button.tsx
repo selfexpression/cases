@@ -4,12 +4,13 @@ import styles from './Button.module.css'
 
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   icon?: ReactNode
+  size?: 'md' | 'sm'
   variant?: 'primary' | 'secondary' | 'danger' | 'ghost'
 }
 
-export function Button({ children, className, icon, variant = 'primary', ...props }: ButtonProps) {
+export function Button({ children, className, icon, size = 'md', variant = 'primary', ...props }: ButtonProps) {
   return (
-    <button className={clsx(styles.button, styles[variant], className)} type="button" {...props}>
+    <button className={clsx(styles.button, styles[size], styles[variant], className)} type="button" {...props}>
       {icon ? <span className={styles.icon}>{icon}</span> : null}
       <span>{children}</span>
     </button>

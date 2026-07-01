@@ -23,13 +23,13 @@ export function ThemeSwitcher() {
     <>
       <Select
         label="Тема"
-        onChange={(event) => setThemeMode(event.target.value as ThemeMode)}
+        onValueChange={(value) => setThemeMode(value as ThemeMode)}
         options={themeOptions}
         value={themeMode}
       />
       <Select
         label="Акцент"
-        onChange={(event) => setAccentColor(event.target.value as AccentColor)}
+        onValueChange={(value) => setAccentColor(value as AccentColor)}
         options={accentOptions}
         value={accentColor}
       />

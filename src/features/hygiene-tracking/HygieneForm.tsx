@@ -2,7 +2,8 @@ import { useState } from 'react'
 import { Save, Sparkles } from 'lucide-react'
 import { Button } from '@/shared/ui/button/Button'
 import { DateInput } from '@/shared/ui/date-input/DateInput'
-import { todayISO } from '@/shared/lib/date/date'
+import { NumberInput } from '@/shared/ui/number-input/NumberInput'
+import { addMonthsISO, formatHumanDate, todayISO } from '@/shared/lib/date/date'
 import type { HygieneDraft } from '@/entities/hygiene/hygiene-repository'
 import styles from './HygieneForm.module.css'
 
@@ -15,7 +16,8 @@ type HygieneFormProps = {
 
 export function HygieneForm({ initialDraft, onCancel, onSubmit, submitLabel = 'Отметить' }: HygieneFormProps) {
   const [completedAt, setCompletedAt] = useState(initialDraft?.completedAt ?? todayISO())
-  const [nextDueAt, setNextDueAt] = useState(initialDraft?.nextDueAt ?? '')
+  const [nextDueInMonths, setNextDueInMonths] = useState(initialDraft?.nextDueInMonths?.toString() ?? '')
+  const calculatedNextDueAt = nextDueInMonths ? addMonthsISO(completedAt, Number(nextDueInMonths)) : undefined
 
   return (
     <div className={styles.form}>
@@ -24,11 +26,13 @@ export function HygieneForm({ initialDraft, onCancel, onSubmit, submitLabel = '�
         onChange={(event) => setCompletedAt(event.target.value)}
         value={completedAt}
       />
-      <DateInput
-        label="Следующая профгигиена"
-        onChange={(event) => setNextDueAt(event.target.value)}
-        value={nextDueAt}
+      <NumberInput
+        label="Следующая профгигиена, через месяцев"
+        min={1}
+        onValueChange={setNextDueInMonths}
+        value={nextDueInMonths}
       />
+      {calculatedNextDueAt ? <p className={styles.hint}>Дата напоминания: {formatHumanDate(calculatedNextDueAt)}</p> : null}
       <div className={styles.actions}>
         {onCancel ? (
           <Button onClick={onCancel} variant="ghost">
@@ -37,7 +41,12 @@ export function HygieneForm({ initialDraft, onCancel, onSubmit, submitLabel = '�
         ) : null}
         <Button
           icon={initialDraft ? <Save size={18} /> : <Sparkles size={18} />}
-          onClick={() => onSubmit({ completedAt, nextDueAt: nextDueAt || undefined })}
+          onClick={() =>
+            onSubmit({
+              completedAt,
+              nextDueInMonths: nextDueInMonths ? Number(nextDueInMonths) : undefined,
+            })
+          }
         >
           {submitLabel}
         </Button>

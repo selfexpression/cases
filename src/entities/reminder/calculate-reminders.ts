@@ -42,8 +42,9 @@ export function calculateReminders({
     const latestVisit = getLatestVisit(patient.id, visits)
     const orthodonticCase = orthodonticCases.find((caseItem) => caseItem.patientId === patient.id)
     const latestHygiene = getLatestHygiene(patient.id, hygieneRecords)
+    const hasSchedulingData = Boolean(latestVisit?.nextAppointmentDate || latestVisit?.shouldReturnInWeeks)
 
-    if (!hasText(orthodonticCase?.nextPlannedAction)) {
+    if (hasSchedulingData && !hasText(orthodonticCase?.nextPlannedAction)) {
       reminders.push({
         patientId: patient.id,
         tone: 'neutral',

@@ -1,4 +1,5 @@
 .field {
+  position: relative;
   display: grid;
   gap: var(--space-2);
 }
@@ -9,12 +10,92 @@
   font-weight: 650;
 }
 
-.select {
+.trigger {
   width: 100%;
   min-height: var(--tap-size);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
   border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 0 var(--space-4);
+  color: var(--color-text);
+  background: var(--color-surface);
+  text-align: left;
+}
+
+.trigger span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.icon,
+.openIcon {
+  flex: 0 0 auto;
+  color: var(--color-muted);
+  transition: transform 160ms ease;
+}
+
+.openIcon {
+  transform: rotate(180deg);
+}
+
+.options {
+  position: absolute;
+  top: calc(100% + var(--space-2));
+  right: 0;
+  left: 0;
+  z-index: 30;
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-panel);
+}
+
+.option,
+.selectedOption {
+  min-height: var(--tap-size);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
   border-radius: var(--radius-sm);
   padding: 0 var(--space-3);
   color: var(--color-text);
-  background: var(--color-surface);
+  background: transparent;
+  text-align: left;
+}
+
+.option:hover {
+  background: var(--color-accent-soft);
+}
+
+.selectedOption {
+  background: var(--color-accent-soft);
+  color: var(--color-accent-strong);
+  font-weight: 750;
+}
+
+:global(:root[data-theme='dark']) .option:hover,
+:global(:root[data-theme='dark']) .selectedOption {
+  background: color-mix(in srgb, var(--color-accent) 22%, var(--color-surface));
+}
+
+:global(:root[data-theme='dark']) .selectedOption {
+  color: var(--color-text);
+}
+
+@media (prefers-color-scheme: dark) {
+  :global(:root[data-theme='system']) .option:hover,
+  :global(:root[data-theme='system']) .selectedOption {
+    background: color-mix(in srgb, var(--color-accent) 22%, var(--color-surface));
+  }
+
+  :global(:root[data-theme='system']) .selectedOption {
+    color: var(--color-text);
+  }
 }

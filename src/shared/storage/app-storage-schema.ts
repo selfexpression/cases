@@ -13,7 +13,6 @@ export const patientSchema = z.object({
   id: z.string(),
   fullName: z.string(),
   birthDate: z.string().optional(),
-  phone: z.string().optional(),
   createdAt: z.string(),
   updatedAt: z.string(),
 })
@@ -51,12 +50,13 @@ export const hygieneRecordSchema = z.object({
   patientId: z.string(),
   completedAt: z.string(),
   nextDueAt: z.string().optional(),
+  nextDueInMonths: z.number().positive().optional(),
   createdAt: z.string(),
   updatedAt: z.string(),
 })
 
 export const appStorageSchema = z.object({
-  version: z.literal(2),
+  version: z.literal(5),
   patients: z.array(patientSchema),
   orthodonticCases: z.array(orthodonticCaseSchema),
   notes: z.array(patientNoteSchema),
