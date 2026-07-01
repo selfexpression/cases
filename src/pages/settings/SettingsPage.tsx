@@ -1,4 +1,5 @@
 import { DataTransferPanel } from '@/features/data-transfer/DataTransferPanel'
+import { ClinicManagementPanel } from '@/features/clinic-management/ClinicManagementPanel'
 import { ReminderSettingsForm } from '@/features/reminder-settings/ReminderSettingsForm'
 import { ThemeSwitcher } from '@/features/theme-switcher/ThemeSwitcher'
 import { Disclosure } from '@/shared/ui/disclosure/Disclosure'
@@ -20,6 +21,11 @@ export function SettingsPage() {
       <section className={styles.section}>
         <h2>Напоминания</h2>
         <ReminderSettingsForm />
+      </section>
+
+      <section className={styles.section}>
+        <h2>Клиники</h2>
+        <ClinicManagementPanel />
       </section>
 
       <Disclosure title="Данные">

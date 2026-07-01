@@ -3,6 +3,7 @@ import { calculateReminders } from './calculate-reminders'
 
 const patient = {
   id: 'patient-1',
+  clinicId: 'clinic-1',
   fullName: 'Иван Иванов',
   createdAt: '2026-06-01T00:00:00.000Z',
   updatedAt: '2026-06-01T00:00:00.000Z',
@@ -120,7 +121,7 @@ describe('calculateReminders', () => {
     vi.useRealTimers()
   })
 
-  it('returns missing next action reminder when orthodontic case has no next action', () => {
+  it('does not return reminders for missing next planned action', () => {
     const reminders = calculateReminders({
       patients: [patient],
       orthodonticCases: [{ patientId: patient.id, updatedAt: '2026-06-01T00:00:00.000Z' }],
@@ -137,11 +138,14 @@ describe('calculateReminders', () => {
       hygieneRecords: [],
     })
 
-    expect(reminders).toContainEqual({
-      patientId: patient.id,
-      tone: 'neutral',
-      type: 'missing-next-action',
-    })
+    expect(reminders).toEqual([
+      {
+        dueDate: '2026-07-10',
+        patientId: patient.id,
+        tone: 'neutral',
+        type: 'appointment-upcoming',
+      },
+    ])
   })
 
   it('does not duplicate a new patient without appointment and next action', () => {

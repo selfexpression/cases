@@ -4,12 +4,14 @@ import { filterPatients } from './filter-patients'
 const patients = [
   {
     id: 'patient-1',
+    clinicId: 'clinic-1',
     fullName: 'Анна Смирнова',
     createdAt: '2026-07-01T00:00:00.000Z',
     updatedAt: '2026-07-01T00:00:00.000Z',
   },
   {
     id: 'patient-2',
+    clinicId: 'clinic-1',
     fullName: 'Пётр Иванов',
     createdAt: '2026-07-01T00:00:00.000Z',
     updatedAt: '2026-07-01T00:00:00.000Z',

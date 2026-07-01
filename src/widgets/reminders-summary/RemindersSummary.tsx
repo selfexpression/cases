@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { formatHumanDate } from '@/shared/lib/date/date'
 import { Badge } from '@/shared/ui/badge/Badge'
-import { getReminderTitle } from '@/entities/reminder/reminder-labels'
+import { getReminderActionLabel, getReminderTitle } from '@/entities/reminder/reminder-labels'
 import { groupReminders } from '@/entities/reminder/group-reminders'
 import type { Reminder } from '@/entities/reminder/types'
 import type { Patient } from '@/entities/patient/types'
@@ -39,7 +39,9 @@ export function RemindersSummary({ patients, reminders }: RemindersSummaryProps)
                     <h3>{patient.fullName}</h3>
                     <p>{getReminderTitle(reminder)}</p>
                   </div>
-                  <Badge tone={reminder.tone}>{'dueDate' in reminder ? formatHumanDate(reminder.dueDate) : 'Проверить'}</Badge>
+                  <Badge tone={reminder.tone}>
+                    {'dueDate' in reminder ? formatHumanDate(reminder.dueDate) : getReminderActionLabel(reminder)}
+                  </Badge>
                 </Link>
               )
             })}

@@ -6,9 +6,10 @@
 
 .header,
 .visit header {
-  display: flex;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  justify-content: space-between;
   gap: var(--space-3);
 }
 
@@ -17,6 +18,7 @@
 }
 
 .visit {
+  min-width: 0;
   display: grid;
   gap: var(--space-3);
   padding: var(--space-4);
@@ -26,6 +28,7 @@
 }
 
 .visit h3 {
+  overflow-wrap: anywhere;
   font-size: 1rem;
 }
 
@@ -35,14 +38,28 @@
 }
 
 .meta {
+  min-width: 0;
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2);
 }
 
+.meta > * {
+  min-width: 0;
+  max-width: 100%;
+}
+
 .rowActions {
   display: flex;
+  flex: 0 0 auto;
   gap: var(--space-2);
+}
+
+@media (max-width: 380px) {
+  .header,
+  .visit header {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 .muted {

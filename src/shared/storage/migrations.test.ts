@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { defaultStorage } from './default-storage'
+import { DEFAULT_CLINIC_ID, defaultStorage } from './default-storage'
 import { migrateStorage } from './migrations'
 
 describe('migrateStorage', () => {
@@ -147,6 +147,40 @@ describe('migrateStorage', () => {
     })
   })
 
+  it('adds default clinic and assigns existing patients during v6 migration', () => {
+    const storage = migrateStorage({
+      version: 6,
+      patients: [
+        {
+          id: 'patient-1',
+          fullName: 'Анна Смирнова',
+          createdAt: '2026-07-01T00:00:00.000Z',
+          updatedAt: '2026-07-01T00:00:00.000Z',
+        },
+      ],
+      orthodonticCases: [],
+      notes: [],
+      visits: [],
+      settings: { themeMode: 'system', accentColor: 'teal', returnReminderLeadWeeks: 2 },
+      hygieneRecords: [],
+    })
+
+    expect(storage.clinics).toEqual([
+      expect.objectContaining({
+        id: DEFAULT_CLINIC_ID,
+        name: 'Основная клиника',
+      }),
+    ])
+    expect(storage.settings.activeClinicId).toBe(DEFAULT_CLINIC_ID)
+    expect(storage.patients[0]).toEqual({
+      id: 'patient-1',
+      clinicId: DEFAULT_CLINIC_ID,
+      fullName: 'Анна Смирнова',
+      createdAt: '2026-07-01T00:00:00.000Z',
+      updatedAt: '2026-07-01T00:00:00.000Z',
+    })
+  })
+
 
   it('removes patient phone during v3 migration', () => {
     expect(
@@ -169,6 +203,7 @@ describe('migrateStorage', () => {
       }).patients[0],
     ).toEqual({
       id: 'patient-1',
+      clinicId: DEFAULT_CLINIC_ID,
       fullName: 'Анна Смирнова',
       createdAt: '2026-07-01T00:00:00.000Z',
       updatedAt: '2026-07-01T00:00:00.000Z',

@@ -19,7 +19,6 @@ function getGroupId(reminder: Reminder): ReminderGroupId {
     case 'return-upcoming':
     case 'appointment-upcoming':
       return 'soon'
-    case 'missing-next-action':
     case 'missing-next-appointment':
       return 'missing'
   }

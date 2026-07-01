@@ -1,5 +1,6 @@
 import { createId } from '@/shared/lib/id/create-id'
 import { readStorage, updateStorage } from '@/shared/storage/app-store'
+import { DEFAULT_CLINIC_ID } from '@/shared/storage/default-storage'
 import type { OrthodonticCase } from '@/entities/orthodontic-case/types'
 import type { Patient } from './types'
 
@@ -21,6 +22,14 @@ function cleanOptional(value?: string) {
   return trimmedValue ? trimmedValue : undefined
 }
 
+function getActiveClinicId() {
+  const storage = readStorage()
+
+  return storage.clinics.some((clinic) => clinic.id === storage.settings.activeClinicId)
+    ? storage.settings.activeClinicId
+    : (storage.clinics[0]?.id ?? DEFAULT_CLINIC_ID)
+}
+
 function toOrthodonticCase(patientId: string, draft: PatientDraft): OrthodonticCase {
   return {
     patientId,
@@ -34,7 +43,12 @@ function toOrthodonticCase(patientId: string, draft: PatientDraft): OrthodonticC
 
 export const patientRepository = {
   getAll() {
-    return readStorage().patients.sort((first, second) => first.fullName.localeCompare(second.fullName))
+    return [...readStorage().patients].sort((first, second) => first.fullName.localeCompare(second.fullName))
+  },
+  getByClinicId(clinicId: string) {
+    return readStorage()
+      .patients.filter((patient) => patient.clinicId === clinicId)
+      .sort((first, second) => first.fullName.localeCompare(second.fullName))
   },
   getById(patientId: string) {
     return readStorage().patients.find((patient) => patient.id === patientId)
@@ -43,6 +57,7 @@ export const patientRepository = {
     const timestamp = nowISO()
     const patient: Patient = {
       id: createId(),
+      clinicId: getActiveClinicId(),
       fullName: draft.fullName.trim(),
       birthDate: cleanOptional(draft.birthDate),
       createdAt: timestamp,
@@ -63,6 +78,7 @@ export const patientRepository = {
     updateStorage((storage) => {
       const nextPatient: Patient = {
         id: patientId,
+        clinicId: storage.patients.find((patient) => patient.id === patientId)?.clinicId ?? DEFAULT_CLINIC_ID,
         fullName: draft.fullName.trim(),
         birthDate: cleanOptional(draft.birthDate),
         createdAt: storage.patients.find((patient) => patient.id === patientId)?.createdAt ?? timestamp,

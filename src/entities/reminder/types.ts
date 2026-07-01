@@ -42,8 +42,3 @@ export type Reminder =
       tone: ReminderTone
       type: 'missing-next-appointment'
     }
-  | {
-      patientId: string
-      tone: ReminderTone
-      type: 'missing-next-action'
-    }

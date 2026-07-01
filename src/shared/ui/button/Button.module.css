@@ -1,4 +1,6 @@
 .button {
+  max-width: 100%;
+  min-width: 0;
   min-height: var(--tap-size);
   display: inline-flex;
   align-items: center;
@@ -11,6 +13,11 @@
     background 160ms ease,
     color 160ms ease,
     transform 160ms ease;
+}
+
+.button > span {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .button:active {
@@ -54,6 +61,7 @@
 }
 
 .icon {
+  flex: 0 0 auto;
   width: 20px;
   height: 20px;
   display: inline-flex;

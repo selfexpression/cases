@@ -25,13 +25,8 @@ function getLatestHygiene(patientId: string, hygieneRecords: HygieneRecord[]) {
     .sort((first, second) => (second.completedAt ?? second.createdAt).localeCompare(first.completedAt ?? first.createdAt))[0]
 }
 
-function hasText(value?: string) {
-  return Boolean(value?.trim())
-}
-
 export function calculateReminders({
   hygieneRecords,
-  orthodonticCases,
   patients,
   returnReminderLeadWeeks = 2,
   visits,
@@ -40,17 +35,7 @@ export function calculateReminders({
 
   for (const patient of patients) {
     const latestVisit = getLatestVisit(patient.id, visits)
-    const orthodonticCase = orthodonticCases.find((caseItem) => caseItem.patientId === patient.id)
     const latestHygiene = getLatestHygiene(patient.id, hygieneRecords)
-    const hasSchedulingData = Boolean(latestVisit?.nextAppointmentDate || latestVisit?.shouldReturnInWeeks)
-
-    if (hasSchedulingData && !hasText(orthodonticCase?.nextPlannedAction)) {
-      reminders.push({
-        patientId: patient.id,
-        tone: 'neutral',
-        type: 'missing-next-action',
-      })
-    }
 
     if (latestVisit?.nextAppointmentDate) {
       const dueState = getDueState(latestVisit.nextAppointmentDate)

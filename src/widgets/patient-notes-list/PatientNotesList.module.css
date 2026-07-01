@@ -5,9 +5,10 @@
 }
 
 .header {
-  display: flex;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  justify-content: space-between;
   gap: var(--space-3);
 }
 
@@ -16,6 +17,7 @@
 }
 
 .note {
+  min-width: 0;
   display: grid;
   gap: var(--space-3);
   padding: var(--space-4);
@@ -30,9 +32,10 @@
 }
 
 .note footer {
-  display: flex;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  justify-content: space-between;
   gap: var(--space-3);
   color: var(--color-muted);
   font-size: 0.84rem;
@@ -40,7 +43,15 @@
 
 .note footer div {
   display: flex;
+  flex: 0 0 auto;
   gap: var(--space-2);
+}
+
+@media (max-width: 380px) {
+  .header,
+  .note footer {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 .muted {

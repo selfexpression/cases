@@ -1,5 +1,7 @@
 .shell {
+  --bottom-navigation-space: calc(126px + env(safe-area-inset-bottom));
   width: min(100%, 1120px);
+  min-width: 0;
   min-height: 100svh;
   display: grid;
   grid-template-rows: 1fr auto;
@@ -10,7 +12,13 @@
 .main {
   min-width: 0;
   padding: calc(env(safe-area-inset-top) + var(--space-4)) var(--space-4)
-    calc(80px + env(safe-area-inset-bottom));
+    calc(var(--bottom-navigation-space) + var(--space-5));
+}
+
+@media (max-width: 380px) {
+  .main {
+    padding-inline: var(--space-3);
+  }
 }
 
 @media (min-width: 820px) {

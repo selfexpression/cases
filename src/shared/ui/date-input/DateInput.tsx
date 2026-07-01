@@ -102,9 +102,19 @@ export function DateInput({ error, id, label, name, onBlur, onChange, value, ...
       }
     }
 
-    document.addEventListener('pointerdown', closeOnOutsideClick)
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsOpen(false)
+      }
+    }
 
-    return () => document.removeEventListener('pointerdown', closeOnOutsideClick)
+    document.addEventListener('pointerdown', closeOnOutsideClick)
+    document.addEventListener('keydown', closeOnEscape)
+
+    return () => {
+      document.removeEventListener('pointerdown', closeOnOutsideClick)
+      document.removeEventListener('keydown', closeOnEscape)
+    }
   }, [isOpen])
 
   const calendarDays = useMemo(() => {
@@ -138,6 +148,12 @@ export function DateInput({ error, id, label, name, onBlur, onChange, value, ...
     setIsOpen(false)
   }
 
+  const clearDate = () => {
+    setMaskedValue('')
+    emitChange('')
+    setIsOpen(false)
+  }
+
   const updateMaskedValue = (nextValue: string) => {
     const formattedValue = formatDateMask(nextValue)
     setMaskedValue(formattedValue)
@@ -152,8 +168,8 @@ export function DateInput({ error, id, label, name, onBlur, onChange, value, ...
   }
 
   const calendar = isOpen ? (
-    <div className={styles.backdrop} role="presentation">
-      <div className={styles.calendar} ref={calendarRef}>
+    <div className={styles.backdrop} onPointerDown={() => setIsOpen(false)} role="presentation">
+      <div className={styles.calendar} onPointerDown={(event) => event.stopPropagation()} ref={calendarRef}>
         <header className={styles.calendarHeader}>
           <button aria-label="Предыдущий месяц" onClick={() => setVisibleMonth((date) => subMonths(date, 1))} type="button">
             <ChevronLeft size={18} />
@@ -192,7 +208,7 @@ export function DateInput({ error, id, label, name, onBlur, onChange, value, ...
         </div>
 
         <footer className={styles.calendarFooter}>
-          <button onClick={() => emitChange('')} type="button">
+          <button onClick={clearDate} type="button">
             <X size={16} />
             Очистить
           </button>

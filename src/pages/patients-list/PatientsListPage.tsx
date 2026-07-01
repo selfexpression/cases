@@ -5,6 +5,8 @@ import { readStorage } from '@/shared/storage/app-store'
 import { useStorageVersion } from '@/shared/storage/use-storage-version'
 import { Button } from '@/shared/ui/button/Button'
 import { EmptyState } from '@/shared/ui/empty-state/EmptyState'
+import { clinicRepository } from '@/entities/clinic/clinic-repository'
+import { ClinicSwitcher } from '@/features/clinic-switcher/ClinicSwitcher'
 import { filterPatients } from '@/features/patient-search/filter-patients'
 import { PatientSearchField } from '@/features/patient-search/PatientSearchField'
 import { PatientCard } from '@/widgets/patient-card/PatientCard'
@@ -15,8 +17,10 @@ export function PatientsListPage() {
   const [query, setQuery] = useState('')
   const storage = readStorage()
   void storageVersion
+  const activeClinic = clinicRepository.getActive()
+  const activeClinicId = clinicRepository.getActiveId()
   const patients = filterPatients({
-    patients: storage.patients,
+    patients: storage.patients.filter((patient) => patient.clinicId === activeClinicId),
     orthodonticCases: storage.orthodonticCases,
     query,
   }).sort((first, second) => first.fullName.localeCompare(second.fullName))
@@ -32,6 +36,8 @@ export function PatientsListPage() {
           <Button icon={<Plus size={18} />}>Добавить</Button>
         </Link>
       </header>
+
+      <ClinicSwitcher />
 
       <PatientSearchField onChange={setQuery} value={query} />
 
@@ -58,7 +64,7 @@ export function PatientsListPage() {
               <Button icon={<Plus size={18} />}>Добавить пациента</Button>
             </Link>
           }
-          description="Создайте первого пациента, чтобы вести ортодонтические заметки, визиты и сроки."
+          description={`Создайте первого пациента для клиники ${activeClinic?.name ?? 'Основная клиника'}.`}
           title="База пациентов пустая"
         />
       )}

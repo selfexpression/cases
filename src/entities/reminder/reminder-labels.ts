@@ -16,7 +16,16 @@ export function getReminderTitle(reminder: Reminder) {
       return 'Пора на профгигиену'
     case 'missing-next-appointment':
       return 'Нет следующей записи'
-    case 'missing-next-action':
-      return 'Не заполнен следующий шаг'
+  }
+}
+
+export function getReminderActionLabel(reminder: Reminder) {
+  if ('dueDate' in reminder) {
+    return undefined
+  }
+
+  switch (reminder.type) {
+    case 'missing-next-appointment':
+      return 'Записать'
   }
 }

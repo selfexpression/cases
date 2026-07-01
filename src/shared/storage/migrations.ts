@@ -1,8 +1,8 @@
 import { differenceInCalendarMonths, parseISO } from 'date-fns'
 import { appStorageSchema, type AppStorage } from './app-storage-schema'
-import { defaultStorage } from './default-storage'
+import { DEFAULT_CLINIC_ID, defaultStorage } from './default-storage'
 
-const CURRENT_STORAGE_VERSION = 6
+const CURRENT_STORAGE_VERSION = 7
 
 type VersionedStorage = {
   version?: number
@@ -78,6 +78,9 @@ const migrations: Record<number, Migration> = {
       version: 6,
       hygieneRecords: addHygieneExternalFlag(storage.hygieneRecords),
     }
+  },
+  6(storage) {
+    return addClinics(storage)
   },
 }
 
@@ -167,6 +170,50 @@ function addHygieneExternalFlag(hygieneRecords: unknown) {
     return {
       ...record,
       externalUnknownDate: typeof record.externalUnknownDate === 'boolean' ? record.externalUnknownDate : false,
+    }
+  })
+}
+
+function addClinics(storage: Record<string, unknown>) {
+  const timestamp = new Date().toISOString()
+  const defaultClinic = {
+    id: DEFAULT_CLINIC_ID,
+    name: 'Основная клиника',
+    createdAt: timestamp,
+    updatedAt: timestamp,
+  }
+  const clinics = Array.isArray(storage.clinics) && storage.clinics.length ? storage.clinics : [defaultClinic]
+  const activeClinicId =
+    isRecord(storage.settings) && typeof storage.settings.activeClinicId === 'string'
+      ? storage.settings.activeClinicId
+      : DEFAULT_CLINIC_ID
+
+  return {
+    ...storage,
+    version: 7,
+    clinics,
+    patients: addDefaultClinicToPatients(storage.patients),
+    settings: {
+      ...cloneDefaultStorage().settings,
+      ...(isRecord(storage.settings) ? storage.settings : {}),
+      activeClinicId,
+    },
+  }
+}
+
+function addDefaultClinicToPatients(patients: unknown) {
+  if (!Array.isArray(patients)) {
+    return []
+  }
+
+  return patients.map((patient) => {
+    if (!isRecord(patient)) {
+      return patient
+    }
+
+    return {
+      ...patient,
+      clinicId: typeof patient.clinicId === 'string' ? patient.clinicId : DEFAULT_CLINIC_ID,
     }
   })
 }
