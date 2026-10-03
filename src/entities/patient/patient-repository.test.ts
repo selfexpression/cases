@@ -42,4 +42,22 @@ describe('patient archive and treatment data', () => {
     expect(reloaded.patients.map((p) => p.fullName)).toEqual(['Изменён Один', 'Изменён Два'])
     expect(reloaded.orthodonticCases.map((c) => c.appliance)).toEqual(['Пластинка', 'Элайнеры'])
   })
+  it('persists a planned duration through creation, editing, and clearing', async () => {
+    const patient = await patientRepository.create({ fullName: 'Тестовый пациент', treatmentPlan: 'Тестовый план', plannedTreatmentMonths: 24 })
+    expect((await indexedDbAdapter.read()).orthodonticCases[0].plannedTreatmentMonths).toBe(24)
+    await patientRepository.update(patient.id, { fullName: patient.fullName, treatmentPlan: 'Тестовый план', plannedTreatmentMonths: 30 })
+    expect((await indexedDbAdapter.read()).orthodonticCases[0].plannedTreatmentMonths).toBe(30)
+    await patientRepository.update(patient.id, { fullName: patient.fullName, treatmentPlan: 'Тестовый план' })
+    const reloaded = await indexedDbAdapter.read()
+    expect(reloaded.orthodonticCases[0].plannedTreatmentMonths).toBeUndefined()
+    expect(reloaded.orthodonticCases[0].treatmentPlan).toBe('Тестовый план')
+    expect(reloaded.patients).toHaveLength(1)
+  })
+
+  it('rejects an invalid duration without replacing existing patient data', async () => {
+    const patient = await patientRepository.create({ fullName: 'Тестовый пациент', plannedTreatmentMonths: 24 })
+    expect(() => patientRepository.update(patient.id, { fullName: patient.fullName, plannedTreatmentMonths: 0 })).toThrow()
+    expect((await indexedDbAdapter.read()).orthodonticCases[0].plannedTreatmentMonths).toBe(24)
+  })
+
 })

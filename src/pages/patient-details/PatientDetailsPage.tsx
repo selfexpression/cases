@@ -82,11 +82,17 @@ export function PatientDetailsPage() {
             <dd>{orthodonticCase?.treatmentPlan || '-'}</dd>
           </div>
           <div>
-            <dt>Дата установки брекетов</dt>
+            <dt>Плановый срок лечения</dt>
+            <dd>{orthodonticCase?.plannedTreatmentMonths !== undefined
+              ? `${orthodonticCase.plannedTreatmentMonths} мес.`
+              : 'Не указан'}</dd>
+          </div>
+          <div>
+            <dt>Дата установки ортодонтического аппарата</dt>
             <dd>{orthodonticCase?.bracesInstalledAt ? formatHumanDate(orthodonticCase.bracesInstalledAt) : 'Не указана'}</dd>
           </div>
           <div>
-            <dt>Срок ношения брекетов{patient.archivedAt ? ' на момент завершения лечения' : ''}</dt>
+            <dt>Срок ношения ортодонтического аппарата{patient.archivedAt ? ' на момент завершения лечения' : ''}</dt>
             <dd>{orthodonticCase?.bracesInstalledAt
               ? `${getFullMonthsSince(orthodonticCase.bracesInstalledAt, patient.archivedAt ? toISODate(new Date(patient.archivedAt)) : undefined)} мес. (полных)`
               : 'Укажите дату установки'}</dd>

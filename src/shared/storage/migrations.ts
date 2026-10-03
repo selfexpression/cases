@@ -2,7 +2,7 @@ import { differenceInCalendarMonths, parseISO } from 'date-fns'
 import { appStorageSchema, type AppStorage } from './app-storage-schema'
 import { DEFAULT_CLINIC_ID, defaultStorage } from './default-storage'
 
-const CURRENT_STORAGE_VERSION = 8
+const CURRENT_STORAGE_VERSION = 9
 
 type VersionedStorage = {
   version?: number
@@ -85,6 +85,10 @@ const migrations: Record<number, Migration> = {
   7(storage) {
     // The v8 schema strips the removed treatment fields during validation.
     return { ...storage, version: 8 }
+  },
+  8(storage) {
+    // Existing plans have no stated duration; keep the new field unset.
+    return { ...storage, version: 9 }
   },
 }
 

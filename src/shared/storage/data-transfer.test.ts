@@ -20,13 +20,13 @@ describe('backup compatibility', () => {
   it.each([false, true])('imports a v7 backup, wrapped: %s', (wrapped) => {
     const result = importStorage(JSON.stringify(wrapped ? { app: 'cases', type: 'cases-backup', storage: legacy } : legacy))
     expect(result.patients).toBe(1)
-    expect(readStorage().version).toBe(8)
+    expect(readStorage().version).toBe(9)
     expect(readStorage().orthodonticCases[0]).toEqual({ patientId: 'p', diagnosis: 'Тест', treatmentPlan: 'План', updatedAt: '2026-01-01T00:00:00.000Z' })
     expect(readStorage().patients[0].archivedAt).toBeUndefined()
   })
 
   it('round-trips new fields and archived patients', () => {
-    importStorage(JSON.stringify({ ...defaultStorage, patients: [{ ...legacy.patients[0], archivedAt: '2026-09-30T21:05:00.000Z' }], orthodonticCases: [{ patientId: 'p', appliance: 'Брекеты', bracesInstalledAt: '2026-01-31', updatedAt: legacy.patients[0].updatedAt }] }))
+    importStorage(JSON.stringify({ ...defaultStorage, patients: [{ ...legacy.patients[0], archivedAt: '2026-09-30T21:05:00.000Z' }], orthodonticCases: [{ patientId: 'p', appliance: 'Брекеты', bracesInstalledAt: '2026-01-31', plannedTreatmentMonths: 24, updatedAt: legacy.patients[0].updatedAt }] }))
     const original = readStorage()
     importStorage(exportStorage())
     expect(readStorage()).toEqual(original)
@@ -38,4 +38,13 @@ describe('backup compatibility', () => {
     expect(() => importStorage(JSON.stringify({ app: 'cases', type: 'cases-backup', storage: bad }))).toThrow()
     expect(readStorage()).toBe(original)
   })
+  it.each([false, true])('imports a v8 backup without changing its records, wrapped: %s', (wrapped) => {
+    const v8 = { ...legacy, version: 8, orthodonticCases: [{ patientId: 'p', treatmentPlan: 'Тестовый план', updatedAt: '' }] }
+    const raw = wrapped ? { app: 'cases', type: 'cases-backup', storage: v8 } : v8
+    expect(importStorage(JSON.stringify(raw)).patients).toBe(1)
+    expect(readStorage().version).toBe(9)
+    expect(readStorage().patients).toEqual(v8.patients)
+    expect(readStorage().orthodonticCases[0].plannedTreatmentMonths).toBeUndefined()
+  })
+
 })

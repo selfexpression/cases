@@ -214,4 +214,19 @@ describe('migrateStorage', () => {
     expect(migrateStorage(null)).toEqual(defaultStorage)
     expect(migrateStorage({ version: 999 })).toEqual(defaultStorage)
   })
+  it('migrates v8 without losing records or inventing a planned duration', () => {
+    const legacy = {
+      ...structuredClone(defaultStorage),
+      version: 8,
+      patients: [{ id: 'p', clinicId: DEFAULT_CLINIC_ID, fullName: 'Тестовый пациент', archivedAt: '2026-10-01T00:00:00.000Z', createdAt: '', updatedAt: '' }],
+      orthodonticCases: [{ patientId: 'p', treatmentPlan: 'Тестовый план', appliance: 'Пластинка', bracesInstalledAt: '2026-01-01', updatedAt: '' }],
+      notes: [{ id: 'n', patientId: 'p', content: 'Тестовая заметка', createdAt: '', updatedAt: '' }],
+      visits: [{ id: 'v', patientId: 'p', visitDate: '2026-01-01', createdAt: '', updatedAt: '' }],
+      hygieneRecords: [{ id: 'h', patientId: 'p', externalUnknownDate: true, createdAt: '', updatedAt: '' }],
+    }
+    const migrated = migrateStorage(legacy, true)
+    expect(migrated).toEqual({ ...legacy, version: 9 })
+    expect(migrated.orthodonticCases[0].plannedTreatmentMonths).toBeUndefined()
+  })
+
 })

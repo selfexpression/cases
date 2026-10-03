@@ -3,7 +3,7 @@ import type { AppStorage } from './app-storage-schema'
 export const DEFAULT_CLINIC_ID = 'default-clinic'
 
 export const defaultStorage: AppStorage = {
-  version: 8,
+  version: 9,
   clinics: [
     {
       id: DEFAULT_CLINIC_ID,

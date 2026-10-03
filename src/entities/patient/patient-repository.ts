@@ -1,5 +1,6 @@
 import { createId } from '@/shared/lib/id/create-id'
 import { readStorage, updateStorage, updateStoragePersisted } from '@/shared/storage/app-store'
+import { orthodonticCaseSchema } from '@/shared/storage/app-storage-schema'
 import { DEFAULT_CLINIC_ID } from '@/shared/storage/default-storage'
 import type { OrthodonticCase } from '@/entities/orthodontic-case/types'
 import type { Patient } from './types'
@@ -11,6 +12,7 @@ export type PatientDraft = {
   appliance?: string
   bracesInstalledAt?: string
   treatmentPlan?: string
+  plannedTreatmentMonths?: number
 }
 
 function nowISO() {
@@ -31,14 +33,15 @@ function getActiveClinicId() {
 }
 
 function toOrthodonticCase(patientId: string, draft: PatientDraft): OrthodonticCase {
-  return {
+  return orthodonticCaseSchema.parse({
     patientId,
     diagnosis: cleanOptional(draft.diagnosis),
     appliance: cleanOptional(draft.appliance),
     bracesInstalledAt: cleanOptional(draft.bracesInstalledAt),
     treatmentPlan: cleanOptional(draft.treatmentPlan),
+    plannedTreatmentMonths: draft.plannedTreatmentMonths,
     updatedAt: nowISO(),
-  }
+  })
 }
 
 export const patientRepository = {

@@ -1,10 +1,12 @@
 import { useState } from 'react'
 import { Save } from 'lucide-react'
-import { useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { todayISO } from '@/shared/lib/date/date'
 import { Button } from '@/shared/ui/button/Button'
 import { DateInput } from '@/shared/ui/date-input/DateInput'
+import { orthodonticCaseSchema } from '@/shared/storage/app-storage-schema'
+import { NumberInput } from '@/shared/ui/number-input/NumberInput'
 import { Input } from '@/shared/ui/input/Input'
 import { Textarea } from '@/shared/ui/textarea/Textarea'
 import type { OrthodonticCase } from '@/entities/orthodontic-case/types'
@@ -19,9 +21,13 @@ const patientFormSchema = z.object({
   appliance: z.string().optional(),
   bracesInstalledAt: z.union([z.literal(''), z.iso.date()]).optional(),
   treatmentPlan: z.string().optional(),
+  plannedTreatmentMonths: z.string().trim()
+    .refine((value) => value === '' || /^\d+$/.test(value), 'Укажите срок лечения целым числом месяцев больше нуля')
+    .transform((value) => value === '' ? undefined : Number(value))
+    .pipe(orthodonticCaseSchema.shape.plannedTreatmentMonths),
 })
 
-type PatientFormValues = z.infer<typeof patientFormSchema>
+type PatientFormValues = z.input<typeof patientFormSchema>
 
 type PatientFormProps = {
   initialCase?: OrthodonticCase
@@ -34,6 +40,7 @@ export function PatientForm({ initialCase, initialPatient, onSubmit, submitLabel
   const [formError, setFormError] = useState<string>()
   const {
     formState: { errors, isSubmitting },
+    control,
     handleSubmit,
     register,
     watch,
@@ -45,6 +52,7 @@ export function PatientForm({ initialCase, initialPatient, onSubmit, submitLabel
       appliance: initialCase?.appliance ?? '',
       bracesInstalledAt: initialCase?.bracesInstalledAt ?? '',
       treatmentPlan: initialCase?.treatmentPlan ?? '',
+      plannedTreatmentMonths: initialCase?.plannedTreatmentMonths?.toString() ?? '',
     },
   })
   const birthDateField = register('birthDate')
@@ -56,12 +64,15 @@ export function PatientForm({ initialCase, initialPatient, onSubmit, submitLabel
     const result = patientFormSchema.safeParse(values)
 
     if (!result.success) {
-      setFormError(result.error.issues[0]?.message ?? 'Проверьте данные')
+      const issue = result.error.issues[0]
+      setFormError(issue?.path[0] === 'plannedTreatmentMonths'
+        ? 'Укажите срок лечения целым числом месяцев больше нуля'
+        : issue?.message ?? 'Проверьте данные')
       return
     }
 
     if (result.data.bracesInstalledAt && result.data.bracesInstalledAt > todayISO()) {
-      setFormError('Дата установки брекетов не может быть в будущем')
+      setFormError('Дата установки ортодонтического аппарата не может быть в будущем')
       return
     }
     setFormError(undefined)
@@ -93,13 +104,27 @@ export function PatientForm({ initialCase, initialPatient, onSubmit, submitLabel
         <Textarea label="Диагноз" {...register('diagnosis')} />
         <Input label="Аппарат" placeholder="Брекеты, пластинка, элайнеры…" {...register('appliance')} />
         <DateInput
-          label="Дата установки брекетов"
+          label="Дата установки ортодонтического аппарата"
           name={bracesDateField.name}
           onBlur={bracesDateField.onBlur}
           onChange={bracesDateField.onChange}
           value={bracesInstalledAt}
         />
         <Textarea label="План лечения" {...register('treatmentPlan')} />
+        <Controller
+          control={control}
+          name="plannedTreatmentMonths"
+          render={({ field }) => (
+            <NumberInput
+              label="Плановый срок лечения, месяцев"
+              min={1}
+              name={field.name}
+              onBlur={field.onBlur}
+              onValueChange={field.onChange}
+              value={field.value}
+            />
+          )}
+        />
       </section>
 
       {formError ? <p className={styles.error} role="alert">{formError}</p> : null}

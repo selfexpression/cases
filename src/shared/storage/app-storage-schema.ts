@@ -33,6 +33,7 @@ export const orthodonticCaseSchema = z.object({
   appliance: z.string().optional(),
   bracesInstalledAt: z.iso.date().optional(),
   treatmentPlan: z.string().optional(),
+  plannedTreatmentMonths: z.number().int().positive().optional(),
   updatedAt: z.string(),
 })
 
@@ -67,7 +68,7 @@ export const hygieneRecordSchema = z.object({
 })
 
 export const appStorageSchema = z.object({
-  version: z.literal(8),
+  version: z.literal(9),
   clinics: z.array(clinicSchema),
   patients: z.array(patientSchema),
   orthodonticCases: z.array(orthodonticCaseSchema),
