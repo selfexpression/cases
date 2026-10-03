@@ -69,8 +69,8 @@ function getHygieneFlag(latestHygiene?: HygieneRecord) {
 }
 
 export function PatientCard({ latestHygiene, latestVisit, orthodonticCase, patient }: PatientCardProps) {
-  const nextVisit = getNextVisitLabel(latestVisit)
-  const hygieneFlag = getHygieneFlag(latestHygiene)
+  const nextVisit = patient.archivedAt ? undefined : getNextVisitLabel(latestVisit)
+  const hygieneFlag = patient.archivedAt ? undefined : getHygieneFlag(latestHygiene)
 
   return (
     <Link className={styles.card} to={`/patients/${patient.id}`}>
@@ -82,7 +82,7 @@ export function PatientCard({ latestHygiene, latestVisit, orthodonticCase, patie
           </span>
         </div>
         <div className={styles.meta}>
-          {nextVisit ? (
+          {patient.archivedAt ? <StatusChip compact>В архиве</StatusChip> : nextVisit ? (
             <StatusChip compact tone={nextVisit.tone}>
               {nextVisit.text}
             </StatusChip>
@@ -101,7 +101,7 @@ export function PatientCard({ latestHygiene, latestVisit, orthodonticCase, patie
           ) : null}
         </div>
         {orthodonticCase?.diagnosis ? <p>{orthodonticCase.diagnosis}</p> : null}
-        {orthodonticCase?.treatmentStage ? <span className={styles.stage}>{orthodonticCase.treatmentStage}</span> : null}
+        {orthodonticCase?.appliance ? <p>Аппарат: {orthodonticCase.appliance}</p> : null}
       </div>
     </Link>
   )

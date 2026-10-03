@@ -1,18 +1,6 @@
-import { z } from 'zod'
-import { appStorageSchema } from './app-storage-schema'
 import { readStorage, writeStorage } from './app-store'
 import { defaultStorage } from './default-storage'
 import { migrateStorage } from './migrations'
-
-const backupSchema = z.union([
-  appStorageSchema,
-  z.object({
-    app: z.literal('cases'),
-    exportedAt: z.string(),
-    storage: z.unknown(),
-    type: z.literal('cases-backup'),
-  }),
-])
 
 export function exportStorage() {
   return JSON.stringify(
@@ -29,13 +17,14 @@ export function exportStorage() {
 
 export function importStorage(rawValue: string) {
   const parsedValue: unknown = JSON.parse(rawValue)
-  const result = backupSchema.safeParse(parsedValue)
-
-  if (!result.success) {
+  if (!parsedValue || typeof parsedValue !== 'object' || Array.isArray(parsedValue)) {
     throw new Error('Файл не похож на экспорт Cases')
   }
-
-  const storage = 'storage' in result.data ? migrateStorage(result.data.storage) : result.data
+  const wrapped = 'storage' in parsedValue
+  if (wrapped && (!('app' in parsedValue) || parsedValue.app !== 'cases' || !('type' in parsedValue) || parsedValue.type !== 'cases-backup')) {
+    throw new Error('Файл не похож на экспорт Cases')
+  }
+  const storage = migrateStorage(wrapped ? parsedValue.storage : parsedValue, true)
   writeStorage(storage)
 
   return {

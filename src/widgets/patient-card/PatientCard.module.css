@@ -94,8 +94,7 @@
   background: var(--color-danger-soft);
 }
 
-.content p,
-.stage {
+.content p {
   overflow-wrap: anywhere;
   color: var(--color-muted);
   font-size: 0.9rem;

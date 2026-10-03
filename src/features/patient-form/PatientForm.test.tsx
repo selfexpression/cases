@@ -12,14 +12,14 @@ describe('PatientForm', () => {
 
     await user.type(screen.getByLabelText('ФИО'), 'Анна Смирнова')
     await user.type(screen.getByLabelText('Диагноз'), 'Скученность')
-    await user.type(screen.getByLabelText('Следующее действие'), 'Смена дуги')
+    await user.type(screen.getByLabelText('Аппарат'), 'Брекеты')
     await user.click(screen.getByRole('button', { name: 'Создать' }))
 
     expect(onSubmit).toHaveBeenCalledWith(
       expect.objectContaining({
         fullName: 'Анна Смирнова',
         diagnosis: 'Скученность',
-        nextPlannedAction: 'Смена дуги',
+        appliance: 'Брекеты',
       }),
     )
   })
@@ -32,10 +32,9 @@ describe('PatientForm', () => {
       <PatientForm
         initialCase={{
           diagnosis: 'Дистальный прикус',
-          nextPlannedAction: 'Контроль',
+          appliance: 'Пластинка',
           patientId: 'patient-1',
           treatmentPlan: 'Элайнеры',
-          treatmentStage: 'Активное лечение',
           updatedAt: '2026-06-01T00:00:00.000Z',
         }}
         initialPatient={{
@@ -50,15 +49,38 @@ describe('PatientForm', () => {
       />,
     )
 
-    await user.clear(screen.getByLabelText('Следующее действие'))
-    await user.type(screen.getByLabelText('Следующее действие'), 'Смена дуги')
+    await user.clear(screen.getByLabelText('Аппарат'))
+    await user.type(screen.getByLabelText('Аппарат'), 'Брекеты')
     await user.click(screen.getByRole('button', { name: 'Сохранить' }))
 
     expect(onSubmit).toHaveBeenCalledWith(
       expect.objectContaining({
         fullName: 'Анна Смирнова',
-        nextPlannedAction: 'Смена дуги',
+        appliance: 'Брекеты',
       }),
     )
   })
+  it('submits the local date and allows clearing an existing installation date', async () => {
+    const user = userEvent.setup()
+    const onSubmit = vi.fn()
+    render(<PatientForm initialPatient={{ id: 'p', clinicId: 'c', fullName: 'Тестовый пациент', createdAt: '', updatedAt: '' }} initialCase={{ patientId: 'p', bracesInstalledAt: '2026-01-31', updatedAt: '' }} onSubmit={onSubmit} submitLabel="Сохранить" />)
+    expect(screen.getByLabelText(/Дата установки брекетов/)).toHaveValue('31.01.2026')
+    await user.click(screen.getByRole('button', { name: 'Сохранить' }))
+    expect(onSubmit).toHaveBeenLastCalledWith(expect.objectContaining({ bracesInstalledAt: '2026-01-31' }))
+    await user.clear(screen.getByLabelText(/Дата установки брекетов/))
+    await user.click(screen.getByRole('button', { name: 'Сохранить' }))
+    expect(onSubmit).toHaveBeenLastCalledWith(expect.objectContaining({ bracesInstalledAt: '' }))
+  })
+
+  it('rejects a future installation date', async () => {
+    const user = userEvent.setup()
+    const onSubmit = vi.fn()
+    render(<PatientForm onSubmit={onSubmit} submitLabel="Создать" />)
+    await user.type(screen.getByLabelText('ФИО'), 'Тестовый пациент')
+    await user.type(screen.getByLabelText(/Дата установки брекетов/), '01.01.2099')
+    await user.click(screen.getByRole('button', { name: 'Создать' }))
+    expect(screen.getByRole('alert')).toHaveTextContent('не может быть в будущем')
+    expect(onSubmit).not.toHaveBeenCalled()
+  })
+
 })

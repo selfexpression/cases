@@ -22,7 +22,7 @@ export function PatientEditPage() {
   return (
     <div className={styles.page}>
       <header className={styles.header}>
-        <IconButton icon={<ArrowLeft size={20} />} label="Назад" onClick={() => navigate(-1)} />
+        <IconButton icon={<ArrowLeft size={20} />} label="Назад" onClick={() => navigate(`/patients/${patient.id}`, { replace: true })} />
         <div>
           <span>Редактирование</span>
           <h1>{patient.fullName}</h1>
@@ -32,9 +32,9 @@ export function PatientEditPage() {
       <PatientForm
         initialCase={orthodonticCase}
         initialPatient={patient}
-        onSubmit={(draft) => {
-          patientRepository.update(patient.id, draft)
-          navigate(`/patients/${patient.id}`)
+        onSubmit={async (draft) => {
+          await patientRepository.update(patient.id, draft)
+          navigate(`/patients/${patient.id}`, { replace: true })
         }}
         submitLabel="Сохранить"
       />

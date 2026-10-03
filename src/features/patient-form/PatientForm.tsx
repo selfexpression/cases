@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Save } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
+import { todayISO } from '@/shared/lib/date/date'
 import { Button } from '@/shared/ui/button/Button'
 import { DateInput } from '@/shared/ui/date-input/DateInput'
 import { Input } from '@/shared/ui/input/Input'
@@ -15,9 +16,9 @@ const patientFormSchema = z.object({
   birthDate: z.string().optional(),
   diagnosis: z.string().optional(),
   fullName: z.string().trim().min(2, 'Укажите ФИО'),
-  nextPlannedAction: z.string().optional(),
+  appliance: z.string().optional(),
+  bracesInstalledAt: z.union([z.literal(''), z.iso.date()]).optional(),
   treatmentPlan: z.string().optional(),
-  treatmentStage: z.string().optional(),
 })
 
 type PatientFormValues = z.infer<typeof patientFormSchema>
@@ -25,14 +26,14 @@ type PatientFormValues = z.infer<typeof patientFormSchema>
 type PatientFormProps = {
   initialCase?: OrthodonticCase
   initialPatient?: Patient
-  onSubmit: (draft: PatientDraft) => void
+  onSubmit: (draft: PatientDraft) => void | Promise<void>
   submitLabel: string
 }
 
 export function PatientForm({ initialCase, initialPatient, onSubmit, submitLabel }: PatientFormProps) {
   const [formError, setFormError] = useState<string>()
   const {
-    formState: { errors },
+    formState: { errors, isSubmitting },
     handleSubmit,
     register,
     watch,
@@ -41,15 +42,17 @@ export function PatientForm({ initialCase, initialPatient, onSubmit, submitLabel
       birthDate: initialPatient?.birthDate ?? '',
       diagnosis: initialCase?.diagnosis ?? '',
       fullName: initialPatient?.fullName ?? '',
-      nextPlannedAction: initialCase?.nextPlannedAction ?? '',
+      appliance: initialCase?.appliance ?? '',
+      bracesInstalledAt: initialCase?.bracesInstalledAt ?? '',
       treatmentPlan: initialCase?.treatmentPlan ?? '',
-      treatmentStage: initialCase?.treatmentStage ?? '',
     },
   })
   const birthDateField = register('birthDate')
   const birthDate = watch('birthDate') ?? ''
+  const bracesDateField = register('bracesInstalledAt')
+  const bracesInstalledAt = watch('bracesInstalledAt') ?? ''
 
-  const submit = (values: PatientFormValues) => {
+  const submit = async (values: PatientFormValues) => {
     const result = patientFormSchema.safeParse(values)
 
     if (!result.success) {
@@ -57,8 +60,16 @@ export function PatientForm({ initialCase, initialPatient, onSubmit, submitLabel
       return
     }
 
+    if (result.data.bracesInstalledAt && result.data.bracesInstalledAt > todayISO()) {
+      setFormError('Дата установки брекетов не может быть в будущем')
+      return
+    }
     setFormError(undefined)
-    onSubmit(result.data)
+    try {
+      await onSubmit(result.data)
+    } catch {
+      setFormError('Не удалось сохранить пациента. Повторите попытку.')
+    }
   }
 
   return (
@@ -80,15 +91,21 @@ export function PatientForm({ initialCase, initialPatient, onSubmit, submitLabel
       <section className={styles.section}>
         <h2>Ортодонтия</h2>
         <Textarea label="Диагноз" {...register('diagnosis')} />
-        <Textarea label="Этап лечения" {...register('treatmentStage')} />
+        <Input label="Аппарат" placeholder="Брекеты, пластинка, элайнеры…" {...register('appliance')} />
+        <DateInput
+          label="Дата установки брекетов"
+          name={bracesDateField.name}
+          onBlur={bracesDateField.onBlur}
+          onChange={bracesDateField.onChange}
+          value={bracesInstalledAt}
+        />
         <Textarea label="План лечения" {...register('treatmentPlan')} />
-        <Textarea label="Следующее действие" {...register('nextPlannedAction')} />
       </section>
 
-      {formError ? <p className={styles.error}>{formError}</p> : null}
+      {formError ? <p className={styles.error} role="alert">{formError}</p> : null}
 
-      <Button icon={<Save size={18} />} type="submit">
-        {submitLabel}
+      <Button disabled={isSubmitting} icon={<Save size={18} />} type="submit">
+        {isSubmitting ? 'Сохранение…' : submitLabel}
       </Button>
     </form>
   )

@@ -2,7 +2,7 @@ import { differenceInCalendarMonths, parseISO } from 'date-fns'
 import { appStorageSchema, type AppStorage } from './app-storage-schema'
 import { DEFAULT_CLINIC_ID, defaultStorage } from './default-storage'
 
-const CURRENT_STORAGE_VERSION = 7
+const CURRENT_STORAGE_VERSION = 8
 
 type VersionedStorage = {
   version?: number
@@ -81,6 +81,10 @@ const migrations: Record<number, Migration> = {
   },
   6(storage) {
     return addClinics(storage)
+  },
+  7(storage) {
+    // The v8 schema strips the removed treatment fields during validation.
+    return { ...storage, version: 8 }
   },
 }
 
@@ -238,7 +242,12 @@ function normalizeInitialStorage(value: unknown) {
   }
 }
 
-export function migrateStorage(value: unknown): AppStorage {
+export function migrateStorage(value: unknown, strict = false): AppStorage {
+  if (strict && (!isRecord(value) || typeof value.version !== 'number' || !Number.isInteger(value.version) || value.version < 1 || value.version > CURRENT_STORAGE_VERSION ||
+    !['patients', 'orthodonticCases', 'notes', 'visits', 'hygieneRecords'].every((key) => Array.isArray(value[key])) ||
+    !isRecord(value.settings))) {
+    throw new Error('Некорректные данные в резервной копии')
+  }
   let nextStorage = normalizeInitialStorage(value) as Record<string, unknown> & VersionedStorage
   let version = typeof nextStorage.version === 'number' ? nextStorage.version : 1
 
@@ -256,6 +265,7 @@ export function migrateStorage(value: unknown): AppStorage {
   const result = appStorageSchema.safeParse(nextStorage)
 
   if (!result.success) {
+    if (strict) throw new Error('Некорректные данные или неподдерживаемая версия резервной копии')
     return cloneDefaultStorage()
   }
 

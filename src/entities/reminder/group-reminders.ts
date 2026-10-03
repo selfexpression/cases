@@ -1,6 +1,6 @@
 import type { Reminder } from './types'
 
-export type ReminderGroupId = 'overdue' | 'today' | 'soon' | 'missing'
+export type ReminderGroupId = 'overdue' | 'today' | 'soon' | 'missing' | 'hygiene'
 
 export type ReminderGroup = {
   id: ReminderGroupId
@@ -12,8 +12,9 @@ function getGroupId(reminder: Reminder): ReminderGroupId {
   switch (reminder.type) {
     case 'appointment-overdue':
     case 'return-due':
-    case 'hygiene-due':
       return reminder.tone === 'danger' ? 'overdue' : 'today'
+    case 'hygiene-due':
+      return 'hygiene'
     case 'appointment-today':
       return 'today'
     case 'return-upcoming':
@@ -30,6 +31,7 @@ export function groupReminders(reminders: Reminder[]): ReminderGroup[] {
     { id: 'today', title: 'Сегодня', reminders: [] },
     { id: 'soon', title: 'Скоро', reminders: [] },
     { id: 'missing', title: 'Без следующей записи', reminders: [] },
+    { id: 'hygiene', title: 'Профгигиена', reminders: [] },
   ]
 
   for (const reminder of reminders) {

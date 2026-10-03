@@ -19,8 +19,8 @@ export function PatientCreatePage() {
       </header>
 
       <PatientForm
-        onSubmit={(draft) => {
-          const patient = patientRepository.create(draft)
+        onSubmit={async (draft) => {
+          const patient = await patientRepository.create(draft)
           navigate(`/patients/${patient.id}`, { replace: true })
         }}
         submitLabel="Создать пациента"

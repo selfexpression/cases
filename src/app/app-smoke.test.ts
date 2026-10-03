@@ -9,16 +9,15 @@ import { defaultStorage } from '@/shared/storage/default-storage'
 import { installTestLocalStorage } from '@/shared/storage/test-storage'
 
 describe('app smoke flow', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     installTestLocalStorage()
-    writeStorage(defaultStorage)
+    await writeStorage(defaultStorage)
   })
 
-  it('creates patient, notes, visit, hygiene and reminders in app storage', () => {
-    const patient = patientRepository.create({
+  it('creates patient, notes, visit, hygiene and reminders in app storage', async () => {
+    const patient = await patientRepository.create({
       fullName: 'Анна Смирнова',
       diagnosis: 'Скученность',
-      nextPlannedAction: 'Смена дуги',
     })
 
     noteRepository.create(patient.id, 'Пациент адаптируется хорошо')

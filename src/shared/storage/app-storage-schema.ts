@@ -22,6 +22,7 @@ export const patientSchema = z.object({
   clinicId: z.string(),
   fullName: z.string(),
   birthDate: z.string().optional(),
+  archivedAt: z.iso.datetime().optional(),
   createdAt: z.string(),
   updatedAt: z.string(),
 })
@@ -29,9 +30,9 @@ export const patientSchema = z.object({
 export const orthodonticCaseSchema = z.object({
   patientId: z.string(),
   diagnosis: z.string().optional(),
-  treatmentStage: z.string().optional(),
+  appliance: z.string().optional(),
+  bracesInstalledAt: z.iso.date().optional(),
   treatmentPlan: z.string().optional(),
-  nextPlannedAction: z.string().optional(),
   updatedAt: z.string(),
 })
 
@@ -66,7 +67,7 @@ export const hygieneRecordSchema = z.object({
 })
 
 export const appStorageSchema = z.object({
-  version: z.literal(7),
+  version: z.literal(8),
   clinics: z.array(clinicSchema),
   patients: z.array(patientSchema),
   orthodonticCases: z.array(orthodonticCaseSchema),

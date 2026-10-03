@@ -1,4 +1,4 @@
-import { addDays, addMonths, addWeeks, differenceInCalendarDays, format, isBefore, isToday, parseISO, startOfToday, subWeeks } from 'date-fns'
+import { addDays, addMonths, addWeeks, differenceInCalendarDays, differenceInMonths, format, isBefore, isToday, parseISO, startOfToday, subWeeks } from 'date-fns'
 
 export function toISODate(date: Date) {
   return format(date, 'yyyy-MM-dd')
@@ -48,4 +48,8 @@ export function getDueState(dateISO: string) {
   }
 
   return 'planned'
+}
+
+export function getFullMonthsSince(dateISO: string, endDateISO = todayISO()) {
+  return Math.max(0, differenceInMonths(parseISO(endDateISO), parseISO(dateISO)))
 }

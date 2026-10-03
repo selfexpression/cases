@@ -1,6 +1,5 @@
 import { readStorage } from '@/shared/storage/app-store'
 import { useStorageVersion } from '@/shared/storage/use-storage-version'
-import { EmptyState } from '@/shared/ui/empty-state/EmptyState'
 import { useReminders } from '@/entities/reminder/use-reminders'
 import { RemindersSummary } from '@/widgets/reminders-summary/RemindersSummary'
 import styles from './RemindersPage.module.css'
@@ -18,14 +17,12 @@ export function RemindersPage() {
         <h1>Напоминания</h1>
       </header>
 
-      {reminders.length ? (
-        <RemindersSummary clinics={storage.clinics} patients={storage.patients} reminders={reminders} />
-      ) : (
-        <EmptyState
-          description="Нет просроченных возвратов, записей на сегодня или подошедшей профгигиены."
-          title="Актуальных напоминаний нет"
-        />
-      )}
+      <RemindersSummary
+        clinics={storage.clinics}
+        initialClinicId={storage.settings.activeClinicId}
+        patients={storage.patients}
+        reminders={reminders}
+      />
     </div>
   )
 }

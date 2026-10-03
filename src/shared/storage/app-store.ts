@@ -6,6 +6,8 @@ type Updater = (storage: AppStorage) => AppStorage
 
 let memoryStorage = structuredClone(defaultStorage)
 let isHydrated = false
+let persistedStorage = memoryStorage
+let pendingWrite: Promise<void> = Promise.resolve()
 
 function emitStorageChange() {
   window.dispatchEvent(new Event('cases-storage-change'))
@@ -16,7 +18,9 @@ export async function hydrateStorage() {
     return memoryStorage
   }
 
+  await pendingWrite
   memoryStorage = await indexedDbAdapter.read()
+  persistedStorage = memoryStorage
   isHydrated = true
   emitStorageChange()
 
@@ -30,8 +34,22 @@ export function readStorage() {
 export function writeStorage(storage: AppStorage) {
   memoryStorage = storage
   isHydrated = true
-  void indexedDbAdapter.write(storage)
+  const write = pendingWrite.then(async () => {
+    try {
+      await indexedDbAdapter.write(storage)
+      persistedStorage = storage
+    } catch (error) {
+      if (memoryStorage === storage) {
+        memoryStorage = persistedStorage
+        emitStorageChange()
+      }
+      throw error
+    }
+  })
+  // Keep the queue usable after a failed write; callers can await the original promise.
+  pendingWrite = write.catch(() => undefined)
   emitStorageChange()
+  return write
 }
 
 export function updateStorage(updater: Updater) {
@@ -40,9 +58,10 @@ export function updateStorage(updater: Updater) {
   return nextStorage
 }
 
+export function updateStoragePersisted(updater: Updater) {
+  return writeStorage(updater(readStorage()))
+}
+
 export function resetStorage() {
-  memoryStorage = structuredClone(defaultStorage)
-  isHydrated = true
-  void indexedDbAdapter.reset()
-  emitStorageChange()
+  return writeStorage(structuredClone(defaultStorage))
 }

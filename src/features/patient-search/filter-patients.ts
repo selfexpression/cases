@@ -19,9 +19,8 @@ export function filterPatients({ orthodonticCases, patients, query }: FilterPati
     const searchableText = [
       patient.fullName,
       orthodonticCase?.diagnosis,
-      orthodonticCase?.treatmentStage,
+      orthodonticCase?.appliance,
       orthodonticCase?.treatmentPlan,
-      orthodonticCase?.nextPlannedAction,
     ]
       .filter(Boolean)
       .join(' ')

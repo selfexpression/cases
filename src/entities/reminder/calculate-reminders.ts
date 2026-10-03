@@ -38,6 +38,7 @@ export function calculateReminders({
   const reminders: Reminder[] = []
 
   for (const patient of patients) {
+    if (patient.archivedAt) continue
     const latestVisit = getLatestVisit(patient.id, visits)
     const latestHygiene = getLatestHygiene(patient.id, hygieneRecords)
 

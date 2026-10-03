@@ -1,5 +1,5 @@
 import { createId } from '@/shared/lib/id/create-id'
-import { readStorage, updateStorage } from '@/shared/storage/app-store'
+import { readStorage, updateStorage, updateStoragePersisted } from '@/shared/storage/app-store'
 import { DEFAULT_CLINIC_ID } from '@/shared/storage/default-storage'
 import type { OrthodonticCase } from '@/entities/orthodontic-case/types'
 import type { Patient } from './types'
@@ -8,9 +8,9 @@ export type PatientDraft = {
   birthDate?: string
   diagnosis?: string
   fullName: string
-  nextPlannedAction?: string
+  appliance?: string
+  bracesInstalledAt?: string
   treatmentPlan?: string
-  treatmentStage?: string
 }
 
 function nowISO() {
@@ -34,9 +34,9 @@ function toOrthodonticCase(patientId: string, draft: PatientDraft): OrthodonticC
   return {
     patientId,
     diagnosis: cleanOptional(draft.diagnosis),
-    treatmentStage: cleanOptional(draft.treatmentStage),
+    appliance: cleanOptional(draft.appliance),
+    bracesInstalledAt: cleanOptional(draft.bracesInstalledAt),
     treatmentPlan: cleanOptional(draft.treatmentPlan),
-    nextPlannedAction: cleanOptional(draft.nextPlannedAction),
     updatedAt: nowISO(),
   }
 }
@@ -53,7 +53,7 @@ export const patientRepository = {
   getById(patientId: string) {
     return readStorage().patients.find((patient) => patient.id === patientId)
   },
-  create(draft: PatientDraft) {
+  async create(draft: PatientDraft) {
     const timestamp = nowISO()
     const patient: Patient = {
       id: createId(),
@@ -64,7 +64,7 @@ export const patientRepository = {
       updatedAt: timestamp,
     }
 
-    updateStorage((storage) => ({
+    await updateStoragePersisted((storage) => ({
       ...storage,
       patients: [...storage.patients, patient],
       orthodonticCases: [...storage.orthodonticCases, toOrthodonticCase(patient.id, draft)],
@@ -75,12 +75,13 @@ export const patientRepository = {
   update(patientId: string, draft: PatientDraft) {
     const timestamp = nowISO()
 
-    updateStorage((storage) => {
+    return updateStoragePersisted((storage) => {
       const nextPatient: Patient = {
         id: patientId,
         clinicId: storage.patients.find((patient) => patient.id === patientId)?.clinicId ?? DEFAULT_CLINIC_ID,
         fullName: draft.fullName.trim(),
         birthDate: cleanOptional(draft.birthDate),
+        archivedAt: storage.patients.find((patient) => patient.id === patientId)?.archivedAt,
         createdAt: storage.patients.find((patient) => patient.id === patientId)?.createdAt ?? timestamp,
         updatedAt: timestamp,
       }
@@ -97,6 +98,15 @@ export const patientRepository = {
           : [...storage.orthodonticCases, nextCase],
       }
     })
+  },
+  setArchived(patientId: string, archived: boolean) {
+    const timestamp = nowISO()
+    return updateStoragePersisted((storage) => ({
+      ...storage,
+      patients: storage.patients.map((patient) => patient.id === patientId
+        ? { ...patient, archivedAt: archived ? (patient.archivedAt ?? timestamp) : undefined, updatedAt: timestamp }
+        : patient),
+    }))
   },
   delete(patientId: string) {
     updateStorage((storage) => ({

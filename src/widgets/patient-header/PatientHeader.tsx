@@ -13,7 +13,7 @@ export function PatientHeader({ patient }: PatientHeaderProps) {
 
   return (
     <header className={styles.header}>
-      <IconButton icon={<ArrowLeft size={20} />} label="Назад" onClick={() => navigate(-1)} />
+      <IconButton icon={<ArrowLeft size={20} />} label="Назад" onClick={() => navigate(patient.archivedAt ? '/?status=archived' : '/')} />
       <div>
         <h1>{patient.fullName}</h1>
         {patient.birthDate ? <span>Дата рождения: {patient.birthDate}</span> : <span>Дата рождения не указана</span>}

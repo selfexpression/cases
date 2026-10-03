@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { calculateReminders } from './calculate-reminders'
 
 const patient = {
@@ -18,6 +18,7 @@ const secondPatient = {
 }
 
 describe('calculateReminders', () => {
+  afterEach(() => vi.useRealTimers())
   it('returns return reminder when patient was not scheduled and return week is due', () => {
     vi.setSystemTime(new Date('2026-07-01T10:00:00.000Z'))
 
@@ -26,7 +27,6 @@ describe('calculateReminders', () => {
       orthodonticCases: [
         {
           patientId: patient.id,
-          nextPlannedAction: 'Смена дуги',
           updatedAt: '2026-06-01T00:00:00.000Z',
         },
       ],
@@ -63,7 +63,6 @@ describe('calculateReminders', () => {
       orthodonticCases: [
         {
           patientId: patient.id,
-          nextPlannedAction: 'Смена дуги',
           updatedAt: '2026-06-01T00:00:00.000Z',
         },
       ],
@@ -101,7 +100,6 @@ describe('calculateReminders', () => {
       orthodonticCases: [
         {
           patientId: patient.id,
-          nextPlannedAction: 'Контроль',
           updatedAt: '2026-06-01T00:00:00.000Z',
         },
       ],
@@ -129,7 +127,8 @@ describe('calculateReminders', () => {
     vi.useRealTimers()
   })
 
-  it('does not return reminders for missing next planned action', () => {
+  it('uses appointment date independently of the orthodontic card', () => {
+    vi.setSystemTime(new Date('2026-07-01T10:00:00.000Z'))
     const reminders = calculateReminders({
       patients: [patient],
       orthodonticCases: [{ patientId: patient.id, updatedAt: '2026-06-01T00:00:00.000Z' }],
@@ -156,7 +155,7 @@ describe('calculateReminders', () => {
     ])
   })
 
-  it('does not duplicate a new patient without appointment and next action', () => {
+  it('does not duplicate a new patient without appointment', () => {
     const reminders = calculateReminders({
       patients: [patient],
       orthodonticCases: [{ patientId: patient.id, updatedAt: '2026-06-01T00:00:00.000Z' }],
@@ -181,7 +180,6 @@ describe('calculateReminders', () => {
       orthodonticCases: [
         {
           patientId: patient.id,
-          nextPlannedAction: 'Активация',
           updatedAt: '2026-06-01T00:00:00.000Z',
         },
       ],
@@ -214,7 +212,6 @@ describe('calculateReminders', () => {
       orthodonticCases: [
         {
           patientId: patient.id,
-          nextPlannedAction: 'Контроль',
           updatedAt: '2026-06-01T00:00:00.000Z',
         },
       ],
@@ -274,4 +271,14 @@ describe('calculateReminders', () => {
 
     vi.useRealTimers()
   })
+  it('excludes archived patients from all reminder types', () => {
+    const reminders = calculateReminders({
+      patients: [{ ...patient, archivedAt: '2026-07-01T10:00:00.000Z' }, secondPatient],
+      orthodonticCases: [],
+      visits: [{ id: 'v', patientId: patient.id, visitDate: '2026-01-01', nextAppointmentDate: '2026-01-02', createdAt: patient.createdAt, updatedAt: patient.updatedAt }],
+      hygieneRecords: [{ id: 'h', patientId: patient.id, nextDueAt: '2026-01-02', createdAt: patient.createdAt, updatedAt: patient.updatedAt }],
+    })
+    expect(reminders).toEqual([{ patientId: secondPatient.id, type: 'missing-next-appointment', tone: 'warning' }])
+  })
+
 })
